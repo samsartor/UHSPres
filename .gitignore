@@ -1,0 +1,7 @@
+.project
+.metadata
+.recommenders
+bin/
+.classpath
+.settings/
+/libs/
