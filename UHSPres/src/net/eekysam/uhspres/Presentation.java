@@ -18,6 +18,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
 
 public class Presentation
 {
@@ -77,6 +78,8 @@ public class Presentation
 		{
 			e.printStackTrace();
 		}
+
+		System.out.printf("OpenGL version is (%s)%n", GL11.glGetString(GL11.GL_VERSION));
 
 		this.engine = new RenderEngine();
 

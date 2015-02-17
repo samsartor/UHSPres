@@ -72,6 +72,7 @@ public class Shader
 		this.shader = GL20.glCreateShader(this.type.glMode);
 		this.created = true;
 		GL20.glShaderSource(this.shader, source);
+		GL20.glCompileShader(this.shader);
 		if (GL20.glGetShaderi(this.shader, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE)
 		{
 			int loglength = GL20.glGetShaderi(this.shader, GL20.GL_INFO_LOG_LENGTH);
@@ -82,26 +83,20 @@ public class Shader
 		return new ShaderCreateInfo(ShaderCreateInfo.Error.NONE, null, null);
 	}
 
-	public ShaderAttachInfo attach(Program program)
+	public boolean attach(Program program)
 	{
 		this.updateDeleteStatus();
 		if (!this.created)
 		{
-			return new ShaderAttachInfo(ShaderAttachInfo.Error.SHADER_NOT_CREATED, null);
+			return false;
 		}
 		int pid = program.getProgram();
 		if (pid <= 0)
 		{
-			return new ShaderAttachInfo(ShaderAttachInfo.Error.PROGRAM_NOT_CREATED, null);
+			return false;
 		}
 		GL20.glAttachShader(pid, this.shader);
-		if (GL20.glGetProgrami(pid, GL20.GL_LINK_STATUS) == GL11.GL_FALSE)
-		{
-			int loglength = GL20.glGetProgrami(pid, GL20.GL_INFO_LOG_LENGTH);
-			String log = GL20.glGetProgramInfoLog(pid, loglength);
-			return new ShaderAttachInfo(ShaderAttachInfo.Error.LINK_ERROR, log);
-		}
-		return new ShaderAttachInfo(ShaderAttachInfo.Error.NONE, null);
+		return true;
 	}
 
 	public void detach(Program program)
@@ -150,5 +145,17 @@ public class Shader
 			return this.shader;
 		}
 		return -1;
+	}
+
+	@Override
+	public String toString()
+	{
+		String file = this.asset.file;
+		int split = file.lastIndexOf('/');
+		if (split != -1)
+		{
+			file = file.substring(split + 1);
+		}
+		return file + "." + this.type.extension;
 	}
 }
