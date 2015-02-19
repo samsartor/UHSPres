@@ -1,8 +1,6 @@
 #version 140
 
 uniform sampler2D samp_diffuse;
-uniform sampler2D samp_normal;
-uniform sampler2D samp_depth;
 
 in vec2 var_texCoord;
 

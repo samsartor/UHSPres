@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map.Entry;
 
+import net.eekysam.uhspres.render.RenderEngine;
+import net.eekysam.uhspres.render.verts.VertexArray;
+import net.eekysam.uhspres.render.verts.VertexBuffer;
 import net.eekysam.uhspres.utils.graphics.GLUtils;
 
 import org.lwjgl.opengl.GL11;
@@ -11,6 +14,12 @@ import org.lwjgl.opengl.GL20;
 
 public abstract class BaseFBO
 {
+	private static VertexBuffer quadPos = null;
+	private static VertexBuffer quadInd = null;
+	private static VertexArray quadVAO = null;
+
+	private static int count = 0;
+
 	public final int width;
 	public final int height;
 	private FrameBufferObject fbo;
@@ -40,6 +49,23 @@ public abstract class BaseFBO
 		if (this.created)
 		{
 			return;
+		}
+
+		BaseFBO.count++;
+
+		if (BaseFBO.quadVAO == null)
+		{
+			BaseFBO.quadVAO = new VertexArray();
+			BaseFBO.quadPos = new VertexBuffer(false);
+			BaseFBO.quadInd = new VertexBuffer(true);
+			BaseFBO.quadVAO.create();
+			BaseFBO.quadPos.create();
+			BaseFBO.quadInd.create();
+			RenderEngine.buffer2DQuad(BaseFBO.quadPos, BaseFBO.quadInd, -1, -1, 0, 2, 2);
+			BaseFBO.quadVAO.bind();
+			VertexArray.enableAttrib(0);
+			BaseFBO.quadPos.attribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
+			BaseFBO.quadVAO.unbind();
 		}
 
 		this.fbo.create();
@@ -82,6 +108,13 @@ public abstract class BaseFBO
 		if (this.created)
 		{
 			this.fbo.delete();
+			BaseFBO.count--;
+			if (BaseFBO.count == 0)
+			{
+				BaseFBO.quadVAO.delete();
+				BaseFBO.quadPos.delete();
+				BaseFBO.quadInd.delete();
+			}
 			this.created = false;
 		}
 	}
@@ -99,17 +132,11 @@ public abstract class BaseFBO
 
 	public void drawQuad()
 	{
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glColor3f(1.0F, 1.0F, 1.0F);
-		GL11.glTexCoord2f(0, 0);
-		GL11.glVertex2f(-1, -1);
-		GL11.glTexCoord2f(1, 0);
-		GL11.glVertex2f(1, -1);
-		GL11.glTexCoord2f(1, 1);
-		GL11.glVertex2f(1, 1);
-		GL11.glTexCoord2f(0, 1);
-		GL11.glVertex2f(-1, 1);
-		GL11.glEnd();
+		BaseFBO.quadVAO.bind();
+		BaseFBO.quadInd.bind();
+		GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_INT, 0);
+		BaseFBO.quadInd.unbind();
+		BaseFBO.quadVAO.unbind();
 	}
 
 	public void drawFull(boolean saveMatrix)

@@ -91,6 +91,8 @@ public class Presentation
 			Display.update();
 			Display.sync(60);
 		}
+
+		Display.destroy();
 	}
 
 	public boolean closeRequested()
