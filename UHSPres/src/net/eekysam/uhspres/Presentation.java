@@ -25,8 +25,8 @@ public class Presentation
 {
 	private static Presentation instance;
 
-	private static int width = 640;
-	private static int height = 480;
+	private static int width = 1080;
+	private static int height = 640;
 
 	public final File theGameDir;
 	public final AssetLoader theAssetLoader;
@@ -59,7 +59,7 @@ public class Presentation
 
 	public static float aspect()
 	{
-		return width() / height();
+		return width() / (float) height();
 	}
 
 	protected void run()

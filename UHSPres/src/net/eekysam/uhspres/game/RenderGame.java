@@ -11,6 +11,7 @@ import net.eekysam.uhspres.asset.Asset;
 import net.eekysam.uhspres.asset.GameAsset;
 import net.eekysam.uhspres.asset.OBJLoader;
 import net.eekysam.uhspres.font.Font;
+import net.eekysam.uhspres.render.CalculateNormals;
 import net.eekysam.uhspres.render.IScreenLayer;
 import net.eekysam.uhspres.render.RenderEngine;
 import net.eekysam.uhspres.render.Transform;
@@ -38,6 +39,7 @@ public class RenderGame implements IScreenLayer
 
 	public VertexArray testVAO;
 	public VertexBuffer testPosBuf;
+	public VertexBuffer testNormBuf;
 	public VertexBuffer testIndBuf;
 	public int testVertexCount;
 
@@ -51,6 +53,7 @@ public class RenderGame implements IScreenLayer
 
 	public final Transform transform;
 	public final ShaderUniform mvpMatrix;
+	public final ShaderUniform mvMatrix;
 
 	public CameraView veiw;
 
@@ -74,19 +77,30 @@ public class RenderGame implements IScreenLayer
 		ArrayList<Integer> testInd = new ArrayList<Integer>();
 		OBJLoader loader = new OBJLoader(testAsset, testInd, testPos, 3);
 		loader.load();
-		FloatBuffer testPosBufVals = GLUtils.bufferFloats(testPos);
-		IntBuffer testIndBufVals = GLUtils.bufferInts(testInd);
+		float[] pos = GLUtils.floatArray(testPos);
+		int[] ind = GLUtils.intArray(testInd);
+		CalculateNormals calcn = new CalculateNormals(pos, ind, true);
+		calcn.calculate();
+		float[] norm = calcn.getNormalData();
+		FloatBuffer testPosBufVals = GLUtils.bufferFloats(pos);
+		FloatBuffer testNormBufVals = GLUtils.bufferFloats(norm);
+		IntBuffer testIndBufVals = GLUtils.bufferInts(ind);
 		this.testVAO = new VertexArray();
 		this.testVAO.create();
 		this.testPosBuf = new VertexBuffer(false);
 		this.testPosBuf.create();
+		this.testNormBuf = new VertexBuffer(false);
+		this.testNormBuf.create();
 		this.testIndBuf = new VertexBuffer(true);
 		this.testIndBuf.create();
 		this.testPosBuf.vertexData(testPosBufVals);
+		this.testNormBuf.vertexData(testNormBufVals);
 		this.testIndBuf.vertexData(testIndBufVals);
 		this.testVAO.bind();
 		VertexArray.enableAttrib(0);
 		this.testPosBuf.attribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
+		VertexArray.enableAttrib(1);
+		this.testNormBuf.attribPointer(1, 3, GL11.GL_FLOAT, false, 0, 0);
 		this.testVAO.unbind();
 		this.testVertexCount = testInd.size();
 
@@ -104,9 +118,10 @@ public class RenderGame implements IScreenLayer
 		this.basicColor = new ShaderUniform("un_color");
 		this.basicColor.setColorRGBA(new Color(0xFFF2C1));
 		this.clip = new ShaderUniform("un_clip");
+		this.mvpMatrix = new ShaderUniform("un_mvp");
+		this.mvMatrix = new ShaderUniform("un_mv");
 
 		this.transform = new Transform();
-		this.mvpMatrix = new ShaderUniform("un_mvp");
 		this.veiw = new CameraView();
 
 		this.geometry = new GeometryFBO(Presentation.width(), Presentation.height());
@@ -160,20 +175,43 @@ public class RenderGame implements IScreenLayer
 		GL11.glDepthMask(true);
 		GL11.glDepthFunc(GL11.GL_LEQUAL);
 		GL11.glDepthRange(0.0f, 1.0f);
+
 		Matrix4f project = this.transform.get(MatrixMode.PROJECT);
 		Transform.createPerspective(project, 60.0F, Presentation.aspect(), 1.0F, 100.0F);
-		this.clip.setFloats(1.0F, 10.0F);
+		this.clip.setFloats(4.0F, 16.0F, Presentation.width(), Presentation.height());
 		Matrix4f model = this.transform.get(MatrixMode.MODEL);
 		model.setIdentity();
-		Matrix4f mvp = this.transform.getMVP();
-		this.mvpMatrix.setMatrix(mvp);
+
 		this.testVAO.bind();
 		this.testIndBuf.bind();
 		this.basic.bind();
-		this.mvpMatrix.upload(this.basic);
+
 		this.basicColor.upload(this.basic);
 		this.clip.upload(this.basic);
-		GL11.glDrawElements(GL11.GL_TRIANGLES, this.testVertexCount, GL11.GL_UNSIGNED_INT, 0);
+
+		Matrix4f modelStart = Matrix4f.load(model, null);
+
+		for (int i = -1; i <= 1; i++)
+		{
+			for (int j = -1; j <= 1; j++)
+			{
+				model.translate(new Vector3f(i * 5.0F, 0.0F, j * 5.0F));
+				model.rotate((float) Math.PI / 4, new Vector3f(0.0F, 1.0F, 0.0F));
+
+				Matrix4f mvp = this.transform.getMVP();
+				this.mvpMatrix.setMatrix(mvp);
+				Matrix4f mv = this.transform.getResult(0b011);
+				this.mvMatrix.setMatrix(mv);
+
+				this.mvpMatrix.upload(this.basic);
+				this.mvMatrix.upload(this.basic);
+
+				GL11.glDrawElements(GL11.GL_TRIANGLES, this.testVertexCount, GL11.GL_UNSIGNED_INT, 0);
+
+				model.load(modelStart);
+			}
+		}
+
 		this.basic.unbind();
 		this.testVAO.unbind();
 		this.testIndBuf.unbind();

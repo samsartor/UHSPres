@@ -17,14 +17,14 @@ public class GLUtils
 		return buff;
 	}
 
-	public static IntBuffer bufferInts(List<Integer> values)
+	public static int[] intArray(List<Integer> values)
 	{
 		int[] array = new int[values.size()];
 		for (int i = 0; i < array.length; i++)
 		{
 			array[i] = values.get(i);
 		}
-		return bufferInts(array);
+		return array;
 	}
 
 	public static FloatBuffer bufferFloats(float... values)
@@ -35,14 +35,14 @@ public class GLUtils
 		return buff;
 	}
 
-	public static FloatBuffer bufferFloats(List<Float> values)
+	public static float[] floatArray(List<Float> values)
 	{
 		float[] array = new float[values.size()];
 		for (int i = 0; i < array.length; i++)
 		{
 			array[i] = values.get(i);
 		}
-		return bufferFloats(array);
+		return array;
 	}
 
 	public static void glTexParameter(int target, int pname, int... param)
