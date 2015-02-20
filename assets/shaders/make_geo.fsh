@@ -1,4 +1,4 @@
-#version 140
+#version 330
 
 in vec3 var_normal;
 in vec4 var_color;

@@ -45,7 +45,7 @@ public class OBJLoader
 						this.faceNum++;
 						for (int i = 1; i < this.polySize + 1; i++)
 						{
-							this.inds.add(Integer.parseInt(line[i]));
+							this.inds.add(Integer.parseInt(line[i]) - 1);
 						}
 					}
 				}

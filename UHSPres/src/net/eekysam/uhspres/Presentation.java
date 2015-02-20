@@ -82,6 +82,7 @@ public class Presentation
 		System.out.printf("OpenGL version is (%s)%n", GL11.glGetString(GL11.GL_VERSION));
 
 		this.engine = new RenderEngine();
+		this.engine.create();
 
 		GameScreen screen = new GameScreen(this.engine);
 

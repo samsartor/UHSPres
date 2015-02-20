@@ -1,17 +1,24 @@
 package net.eekysam.uhspres.game;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import net.eekysam.uhspres.Presentation;
+import net.eekysam.uhspres.asset.Asset;
 import net.eekysam.uhspres.asset.GameAsset;
 import net.eekysam.uhspres.asset.OBJLoader;
 import net.eekysam.uhspres.font.Font;
 import net.eekysam.uhspres.render.IScreenLayer;
 import net.eekysam.uhspres.render.RenderEngine;
 import net.eekysam.uhspres.render.fbo.DiffuseFBO;
+import net.eekysam.uhspres.render.fbo.EnumDrawBufferLocs;
+import net.eekysam.uhspres.render.shader.Program;
+import net.eekysam.uhspres.render.shader.Shader;
+import net.eekysam.uhspres.render.shader.Shader.ShaderType;
+import net.eekysam.uhspres.render.shader.ShaderUniform;
 import net.eekysam.uhspres.render.verts.VertexArray;
 import net.eekysam.uhspres.render.verts.VertexBuffer;
 import net.eekysam.uhspres.utils.graphics.GLUtils;
@@ -27,9 +34,17 @@ public class RenderGame implements IScreenLayer
 	public VertexBuffer testPosBuf;
 	public VertexBuffer testIndBuf;
 	public int testVertexCount;
+	
+	private Program basic;
+	private Shader basicVert;
+	private Shader basicFrag;
+	private ShaderUniform basicColor;
+	
+	public final RenderEngine theEngine;
 
-	public RenderGame()
+	public RenderGame(RenderEngine engine)
 	{
+		this.theEngine = engine;
 		try
 		{
 			this.testFont = Font.loadFont(new GameAsset("fonts/Arial.fnt"));
@@ -60,6 +75,19 @@ public class RenderGame implements IScreenLayer
 		this.testPosBuf.attribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
 		this.testVAO.unbind();
 		this.testVertexCount = testInd.size();
+		
+		Asset basicAsset = new Asset("shaders/basic");
+		this.basic = new Program(EnumDrawBufferLocs.DIFFUSE);
+		this.basicFrag = new Shader(ShaderType.FRAGMENT, basicAsset);
+		this.basicVert = new Shader(ShaderType.VERTEX, basicAsset);
+		this.basic.create();
+		this.theEngine.createShader(this.basicFrag);
+		this.theEngine.createShader(this.basicVert);
+		this.basicFrag.attach(this.basic);
+		this.basicVert.attach(this.basic);
+		this.theEngine.linkProgram(this.basic, basicAsset.file);
+		this.basicColor = new ShaderUniform("un_color");
+		this.basicColor.setFloats(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	@Override
@@ -90,7 +118,11 @@ public class RenderGame implements IScreenLayer
 	{
 		this.testVAO.bind();
 		this.testIndBuf.bind();
+		this.basic.bind();
+		this.theEngine.uploadMVPMatrix(this.basic);
+		this.basicColor.upload(this.basic);
 		GL11.glDrawElements(GL11.GL_TRIANGLES, this.testVertexCount, GL11.GL_UNSIGNED_INT, 0);
+		this.basic.unbind();
 		this.testVAO.unbind();
 		this.testIndBuf.unbind();
 	}

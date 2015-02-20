@@ -138,28 +138,4 @@ public abstract class BaseFBO
 		BaseFBO.quadInd.unbind();
 		BaseFBO.quadVAO.unbind();
 	}
-
-	public void drawFull(boolean saveMatrix)
-	{
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		if (saveMatrix)
-		{
-			GL11.glPushMatrix();
-		}
-		GL11.glLoadIdentity();
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		if (saveMatrix)
-		{
-			GL11.glPushMatrix();
-		}
-		GL11.glLoadIdentity();
-		this.drawQuad();
-		if (saveMatrix)
-		{
-			GL11.glPopMatrix();
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glPopMatrix();
-			GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		}
-	}
 }

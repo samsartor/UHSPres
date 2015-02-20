@@ -1,4 +1,4 @@
-#version 140
+#version 330
 
 uniform sampler2D samp_diffuse;
 uniform sampler2D samp_normal;

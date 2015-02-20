@@ -34,7 +34,7 @@ public class GameScreen
 		this.layers = new EnumMap<>(EnumScreenLayers.class);
 		this.target = new DiffuseFBO(Presentation.width(), Presentation.height());
 		this.target.create();
-		this.theGame = new RenderGame();
+		this.theGame = new RenderGame(this.engine);
 		this.layers.put(EnumScreenLayers.GAME_LAYER, this.theGame);
 	}
 
@@ -52,13 +52,15 @@ public class GameScreen
 			if (layer != null)
 			{
 				this.target.bind();
-				GL11.glClearColor(1, 1, 1, 1);
+				GL11.glClearColor(184 / 255.0F , 181 / 255.0F, 255 / 255.0F, 1.0F);
 				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 				layer.render(this.engine, this.target);
 				this.target.unbind();
 				GL13.glActiveTexture(GL13.GL_TEXTURE0);
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.target.getDiffuse());
-				this.target.drawFull(false);
+				this.engine.bindBlit(0);
+				this.target.drawQuad();
+				this.engine.unbindBlit();
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 			}
 		}

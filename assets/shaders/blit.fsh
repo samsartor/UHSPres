@@ -1,4 +1,4 @@
-#version 140
+#version 330
 
 uniform sampler2D samp_diffuse;
 
@@ -8,5 +8,5 @@ out vec4 out_diffuse;
 
 void main()
 {
-	out_diffuse = texture2D(samp_diffuse, var_texCoord);
+	out_diffuse = texture(samp_diffuse, var_texCoord);
 }

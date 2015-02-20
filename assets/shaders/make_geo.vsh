@@ -1,4 +1,4 @@
-#version 140
+#version 330
 
 layout(location = 0) in vec3 in_vertex;
 layout(location = 3) in vec3 in_normal;
