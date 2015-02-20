@@ -16,6 +16,7 @@ import net.eekysam.uhspres.utils.graphics.ImgUtils;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -56,6 +57,11 @@ public class Presentation
 		return height;
 	}
 
+	public static float aspect()
+	{
+		return width() / height();
+	}
+
 	protected void run()
 	{
 		Keyboard.enableRepeatEvents(false);
@@ -73,6 +79,7 @@ public class Presentation
 		{
 			Display.setDisplayMode(new DisplayMode(Presentation.width(), Presentation.height()));
 			Display.create();
+			Mouse.create();
 		}
 		catch (LWJGLException e)
 		{

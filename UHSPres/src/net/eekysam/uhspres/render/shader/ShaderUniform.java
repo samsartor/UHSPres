@@ -9,6 +9,7 @@ import java.nio.IntBuffer;
 
 import net.eekysam.uhspres.utils.graphics.GLUtils;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix;
 import org.lwjgl.util.vector.Matrix2f;
@@ -96,6 +97,7 @@ public class ShaderUniform
 		int loc = GL20.glGetUniformLocation(pid, this.name);
 		if (loc == -1)
 		{
+			System.err.printf("Could not find uniform: %s%n", this.name);
 			return false;
 		}
 		Object[] pars = new Object[this.data.length + 1];
@@ -110,6 +112,8 @@ public class ShaderUniform
 		}
 		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
 		{
+			System.err.printf("Could not call %s with uniform (%s), it threw a:%n", this.call.getName(), this.name);
+			e.printStackTrace(System.err);
 			return false;
 		}
 		return true;
@@ -221,7 +225,7 @@ public class ShaderUniform
 
 	private void setVectors(int size, Vector... value)
 	{
-		FloatBuffer buf = FloatBuffer.allocate(size * value.length);
+		FloatBuffer buf = BufferUtils.createFloatBuffer(size * value.length);
 		for (int i = 0; i < value.length; i++)
 		{
 			value[i].store(buf);
@@ -329,7 +333,7 @@ public class ShaderUniform
 
 	private void setMatricies(int size, boolean transpose, Matrix... value)
 	{
-		FloatBuffer buf = FloatBuffer.allocate(size * size * value.length);
+		FloatBuffer buf = BufferUtils.createFloatBuffer(size * size * value.length);
 		for (int i = 0; i < value.length; i++)
 		{
 			value[i].store(buf);
@@ -378,7 +382,7 @@ public class ShaderUniform
 
 	public void setColorsRGB(Color... value)
 	{
-		FloatBuffer buf = FloatBuffer.allocate(3 * value.length);
+		FloatBuffer buf = BufferUtils.createFloatBuffer(3 * value.length);
 		float[] comps = new float[3];
 		for (int i = 0; i < value.length; i++)
 		{
@@ -397,7 +401,7 @@ public class ShaderUniform
 
 	public void setColorsRGBA(Color... value)
 	{
-		FloatBuffer buf = FloatBuffer.allocate(4 * value.length);
+		FloatBuffer buf = BufferUtils.createFloatBuffer(4 * value.length);
 		float[] comps = new float[4];
 		for (int i = 0; i < value.length; i++)
 		{

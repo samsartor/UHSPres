@@ -1,7 +1,5 @@
 package net.eekysam.uhspres.render;
 
-import org.lwjgl.util.vector.Matrix4f;
-
 import net.eekysam.uhspres.asset.Asset;
 import net.eekysam.uhspres.render.fbo.EnumDrawBufferLocs;
 import net.eekysam.uhspres.render.shader.Program;
@@ -35,14 +33,12 @@ public class RenderEngine
 		positionBuf.vertexData(GLUtils.bufferFloats(verts));
 		indexBuf.vertexData(GLUtils.bufferInts(RenderEngine.quadIndicies));
 	}
-	
+
 	private Program blit;
 	private Shader blitVert;
 	private Shader blitFrag;
 	private ShaderUniform blitDiffuse;
-	
-	private ShaderUniform mvpMatrix;
-	
+
 	public RenderEngine()
 	{
 		this.blit = new Program(EnumDrawBufferLocs.DIFFUSE);
@@ -50,10 +46,8 @@ public class RenderEngine
 		this.blitVert = new Shader(ShaderType.VERTEX, blitAsset);
 		this.blitFrag = new Shader(ShaderType.FRAGMENT, blitAsset);
 		this.blitDiffuse = new ShaderUniform("samp_diffuse");
-		
-		this.mvpMatrix = new ShaderUniform("un_mvp");
 	}
-	
+
 	public void create()
 	{
 		this.blit.create();
@@ -62,19 +56,18 @@ public class RenderEngine
 		this.blitVert.attach(this.blit);
 		this.blitFrag.attach(this.blit);
 		this.linkProgram(this.blit, this.blitFrag.asset.file);
-		this.mvpMatrix.setMatricies(Matrix4f.setIdentity(new Matrix4f()));
 	}
-	
+
 	public boolean createShader(Shader shader)
 	{
 		return this.displayShaderCreateInfo(shader.toString(), shader.create());
 	}
-	
+
 	public boolean linkProgram(Program program, String name)
 	{
 		return this.displayProgramLinkInfo(name, program.link());
 	}
-	
+
 	private boolean displayShaderCreateInfo(String shaderName, ShaderCreateInfo info)
 	{
 		if (info.state == ShaderCreateInfo.Error.NONE)
@@ -96,7 +89,7 @@ public class RenderEngine
 			return false;
 		}
 	}
-	
+
 	private boolean displayProgramLinkInfo(String programName, ProgramLinkInfo info)
 	{
 		if (info.state == ProgramLinkInfo.Error.NONE)
@@ -114,21 +107,16 @@ public class RenderEngine
 			return false;
 		}
 	}
-	
+
 	public void bindBlit(int texture)
 	{
 		this.blit.bind();
 		this.blitDiffuse.setInt(texture);
 		this.blitDiffuse.upload(this.blit);
 	}
-	
+
 	public void unbindBlit()
 	{
 		this.blit.unbind();
-	}
-	
-	public void uploadMVPMatrix(Program program)
-	{
-		this.mvpMatrix.upload(program);
 	}
 }

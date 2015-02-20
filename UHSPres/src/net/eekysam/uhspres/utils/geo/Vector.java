@@ -1,5 +1,7 @@
 package net.eekysam.uhspres.utils.geo;
 
+import org.lwjgl.util.vector.Vector3f;
+
 /**
  * A vector
  */
@@ -41,6 +43,11 @@ public class Vector
 		return getVector(ray.start, ray.end);
 	}
 
+	public static Vector getVector(Vector3f vector)
+	{
+		return new Vector(vector.x, vector.y, vector.z);
+	}
+
 	private Vector(float x, float y, float z)
 	{
 		this.xpart = x;
@@ -74,6 +81,7 @@ public class Vector
 
 	/**
 	 * Changes the length of this vector.
+	 * 
 	 * @param length The new length
 	 */
 	public void changeLength(float length)
@@ -83,6 +91,7 @@ public class Vector
 
 	/**
 	 * Scales this vector.
+	 * 
 	 * @param scale The ratio to scale this vector by
 	 */
 	public void scale(float scale)

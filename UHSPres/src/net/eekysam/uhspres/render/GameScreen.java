@@ -8,6 +8,8 @@ import net.eekysam.uhspres.render.fbo.DiffuseFBO;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL20;
 
 public class GameScreen
 {
@@ -45,21 +47,25 @@ public class GameScreen
 
 	public void render()
 	{
-		GL11.glClearColor(0, 0, 0, 0);
+		GL11.glClearColor(0.5F, 0.5F, 0.8F, 1.0F);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+		GL20.glBlendEquationSeparate(GL14.GL_FUNC_ADD, GL14.GL_FUNC_ADD);
+		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
 		for (IScreenLayer layer : this.layers.values())
 		{
 			if (layer != null)
 			{
 				this.target.bind();
-				GL11.glClearColor(184 / 255.0F , 181 / 255.0F, 255 / 255.0F, 1.0F);
+				GL11.glClearColor(0, 0, 0, 0);
 				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 				layer.render(this.engine, this.target);
 				this.target.unbind();
 				GL13.glActiveTexture(GL13.GL_TEXTURE0);
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.target.getDiffuse());
 				this.engine.bindBlit(0);
+				GL11.glEnable(GL11.GL_BLEND);
 				this.target.drawQuad();
+				GL11.glDisable(GL11.GL_BLEND);
 				this.engine.unbindBlit();
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 			}

@@ -1,5 +1,7 @@
 package net.eekysam.uhspres.utils.geo;
 
+import org.lwjgl.util.vector.Vector3f;
+
 /**
  * A point in 3 dimensional space.
  */
@@ -15,6 +17,11 @@ public class Point
 	public static Point getPoint(double x, double y, double z)
 	{
 		return new Point(x, y, z);
+	}
+
+	public static Point getPoint(Vector3f vector)
+	{
+		return new Point(vector.x, vector.y, vector.z);
 	}
 
 	private Point(double x, double y, double z)
@@ -123,10 +130,13 @@ public class Point
 
 	/**
 	 * Gets a point along the line between the given points.
+	 * 
 	 * @param p1 The first point
 	 * @param p2 The second point
 	 * @param xval The x coordinate of the new point
-	 * @return The only point on the line with the given coordinate. null if the two points are two close or if the given coordinate is not between the points.
+	 * @return The only point on the line with the given coordinate. null if the
+	 *         two points are two close or if the given coordinate is not
+	 *         between the points.
 	 */
 	public static Point getIntermediateWithXValue(Point p1, Point p2, double xval)
 	{
@@ -157,6 +167,7 @@ public class Point
 
 	/**
 	 * Creates a new point by translating the given point by the given vector.
+	 * 
 	 * @param point The point to translate (Remains unchanged)
 	 * @param vector The translation vector
 	 * @return A new point
@@ -168,10 +179,13 @@ public class Point
 
 	/**
 	 * Gets a point along the line between the given points.
+	 * 
 	 * @param p1 The first point
 	 * @param p2 The second point
 	 * @param yval The y coordinate of the new point
-	 * @return The only point on the line with the given coordinate. null if the two points are two close or if the given coordinate is not between the points.
+	 * @return The only point on the line with the given coordinate. null if the
+	 *         two points are two close or if the given coordinate is not
+	 *         between the points.
 	 */
 	public static Point getIntermediateWithYValue(Point p1, Point p2, double yval)
 	{
@@ -191,11 +205,14 @@ public class Point
 	}
 
 	/**
-	 * Gets a point along or extended beyond the line created by the given points.
+	 * Gets a point along or extended beyond the line created by the given
+	 * points.
+	 * 
 	 * @param p1 The first point
 	 * @param p2 The second point
 	 * @param yval The y coordinate of the new point
-	 * @return The only point on the line with the given coordinate. null if the two points are two close.
+	 * @return The only point on the line with the given coordinate. null if the
+	 *         two points are two close.
 	 */
 	public static Point getSlideWithYValue(Point p1, Point p2, double yval)
 	{
@@ -216,10 +233,13 @@ public class Point
 
 	/**
 	 * Gets a point along the line between the given points.
+	 * 
 	 * @param p1 The first point
 	 * @param p2 The second point
 	 * @param zval The z coordinate of the new point
-	 * @return The only point on the line with the given coordinate. null if the two points are two close or if the given coordinate is not between the points.
+	 * @return The only point on the line with the given coordinate. null if the
+	 *         two points are two close or if the given coordinate is not
+	 *         between the points.
 	 */
 	public static Point getIntermediateWithZValue(Point p1, Point p2, double zval)
 	{
@@ -240,9 +260,13 @@ public class Point
 
 	/**
 	 * Gets a point along the line between the given points.
+	 * 
 	 * @param p1 The first point
 	 * @param p2 The second point
-	 * @param slide The length from the first point to the new point divided by the length between the given points. A value of 0.0 would give the first point, 1.0 would give the second point, 0.5 would give the average of the two, etc. 
+	 * @param slide The length from the first point to the new point divided by
+	 *            the length between the given points. A value of 0.0 would give
+	 *            the first point, 1.0 would give the second point, 0.5 would
+	 *            give the average of the two, etc.
 	 * @return A point along (or extended out from) the line
 	 * @see {@link net.eekysam.uhspres.utils.geo.Ray#getPart(float)}
 	 */
@@ -257,10 +281,12 @@ public class Point
 
 	/**
 	 * Gets a point along the line between the given points.
+	 * 
 	 * @param p1 The first point
 	 * @param p2 The second point
 	 * @param length The length from the first point to the new point
-	 * @return A point along (or extended out from) the line. null if the points are too close.
+	 * @return A point along (or extended out from) the line. null if the points
+	 *         are too close.
 	 */
 	public static Point getSlideWithLength(Point p1, Point p2, double length)
 	{
@@ -280,13 +306,15 @@ public class Point
 			return new Point(p1.xCoord + x * weight, p1.yCoord + y * weight, p1.zCoord + z * weight);
 		}
 	}
-	
+
 	/**
 	 * Gets a point along the line between the given points.
+	 * 
 	 * @param p1 The first point
 	 * @param p2 The second point
 	 * @param length The length from the second point to the new point
-	 * @return A point along (or extended out from) the line. null if the points are too close.
+	 * @return A point along (or extended out from) the line. null if the points
+	 *         are too close.
 	 */
 	public static Point getSlideAddLength(Point p1, Point p2, double length)
 	{
@@ -309,6 +337,7 @@ public class Point
 
 	/**
 	 * Duplicates this point.
+	 * 
 	 * @return A new point.
 	 */
 	public Point duplicate()
