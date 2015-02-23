@@ -17,6 +17,7 @@ import net.eekysam.uhspres.render.Transform.MatrixMode;
 import net.eekysam.uhspres.render.fbo.DiffuseFBO;
 import net.eekysam.uhspres.render.fbo.GeometryFBO;
 import net.eekysam.uhspres.render.fbo.ValueFBO;
+import net.eekysam.uhspres.render.lights.PointLight;
 import net.eekysam.uhspres.render.shader.ShaderUniform;
 import net.eekysam.uhspres.render.verts.VertexArray;
 import net.eekysam.uhspres.render.verts.VertexBuffer;
@@ -24,8 +25,10 @@ import net.eekysam.uhspres.utils.graphics.GLUtils;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 public class RenderGame implements IScreenLayer
 {
@@ -66,6 +69,11 @@ public class RenderGame implements IScreenLayer
 	public GeometryFBO geometry;
 	public ValueFBO valSwap;
 	public ValueFBO occlusion;
+	public DiffuseFBO light;
+	
+	public Vector4f ambient = new Vector4f(86 / 255.0F, 85 / 255.0F, 79 / 255.0F, 1.0F);
+	
+	public ArrayList<PointLight> lights = new ArrayList<PointLight>();
 	
 	public RenderGame(RenderEngine engine)
 	{
@@ -122,6 +130,10 @@ public class RenderGame implements IScreenLayer
 		this.valSwap.create();
 		this.occlusion = new ValueFBO(Presentation.width(), Presentation.height());
 		this.occlusion.create();
+		this.light = new DiffuseFBO(Presentation.width(), Presentation.height());
+		this.light.create();
+		
+		this.lights.add(new PointLight(new Vector3f(5.0F, 5.0F, 5.0F), new Vector4f(185 / 255.0F, 190 / 255.0F, 200 / 255.0F, 1.0F), 15.0F, 0.0F, 0.0F, 0.2F));
 	}
 	
 	@Override
@@ -141,29 +153,36 @@ public class RenderGame implements IScreenLayer
 		
 		this.renderGame();
 		
-		GL11.glDisable(GL11.GL_BLEND);
-		
 		target.bind();
 		ShaderUniform un = new ShaderUniform();
-		this.theEngine.mulblit.bind();
+		this.theEngine.blit.bind();
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.geometry.getDiffuse());
 		un.setInt(0);
 		un.upload(this.theEngine.mulblit, "samp_diffuse");
-		GL13.glActiveTexture(GL13.GL_TEXTURE1);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.occlusion.getValue());
-		un.setInt(1);
-		un.upload(this.theEngine.mulblit, "samp_value");
+		
+		GL11.glEnable(GL11.GL_BLEND);
+		GL14.glBlendEquation(GL14.GL_FUNC_ADD);
+		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ZERO, GL11.GL_ONE, GL11.GL_ZERO);
 		
 		this.geometry.drawQuad();
 		
-		this.theEngine.mulblit.unbind();
+		GL14.glBlendEquation(GL14.GL_FUNC_ADD);
+		GL14.glBlendFuncSeparate(GL11.GL_DST_COLOR, GL11.GL_ZERO, GL11.GL_ZERO, GL11.GL_ONE);
+		
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.light.getDiffuse());
+		
+		this.light.drawQuad();
+		
+		this.theEngine.blit.unbind();
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		GL11.glDisable(GL11.GL_BLEND);
 		
 		this.timer.update();
 	}
@@ -175,6 +194,9 @@ public class RenderGame implements IScreenLayer
 	
 	public void renderGame()
 	{
+		GL11.glDisable(GL11.GL_BLEND);
+		ShaderUniform un = new ShaderUniform();
+		
 		this.veiw.update(this.cameraTransform.get(MatrixMode.VIEW), new Vector3f(0.0F, 0.0F, 1.0F));
 		
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -198,7 +220,50 @@ public class RenderGame implements IScreenLayer
 		
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		
+		this.occlusion.bind();
+		GL11.glClearColor(1.0F, 1.0F, 1.0F, 1.0F);
+		GL11.glDisable(GL11.GL_BLEND);
+		
 		this.theEngine.ssaoPass.renderOcclusion(Presentation.width(), Presentation.height(), this.geometry, this.valSwap, this.occlusion, 3.0F, project);
+		
+		this.light.bind();
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+		this.theEngine.lumblit.bind();
+		
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.occlusion.getValue());
+		un.setInt(0);
+		un.upload(this.theEngine.lumblit, "samp_value");
+		un.setVector(this.ambient);
+		un.upload(this.theEngine.lumblit, "un_base");
+		
+		this.occlusion.drawQuad();
+		
+		GL11.glEnable(GL11.GL_BLEND);
+		GL14.glBlendEquation(GL14.GL_FUNC_ADD);
+		GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
+		
+		this.theEngine.light.bind();
+		PointLight.icosVAO.bind();
+		PointLight.icosIndBuf.bind();
+		PointLight.uploadCommonUniforms(this.cameraTransform, this.theEngine.light);
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.geometry.getNormal());
+		un.setInt(0);
+		un.upload(this.theEngine.light, "samp_norm");
+		GL13.glActiveTexture(GL13.GL_TEXTURE1);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.geometry.getDepth());
+		un.setInt(1);
+		un.upload(this.theEngine.light, "samp_depth");
+		for (PointLight light : this.lights)
+		{
+			light.uploadUniforms(this.theEngine.light);
+			GL11.glDrawElements(GL11.GL_TRIANGLES, 20 * 3, GL11.GL_UNSIGNED_INT, 0);
+		}
+		PointLight.icosIndBuf.unbind();
+		PointLight.icosVAO.unbind();
+		
+		GL11.glDisable(GL11.GL_BLEND);
 	}
 	
 	public void renderGameGeo(Transform transform, Runnable onMatrixChange)
@@ -227,57 +292,6 @@ public class RenderGame implements IScreenLayer
 		this.testVAO.unbind();
 		this.testIndBuf.unbind();
 	}
-	
-	/*
-	public void renderGame(float partial, RenderEngine engine, DiffuseFBO target)
-	{
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glDepthMask(true);
-		GL11.glDepthFunc(GL11.GL_LEQUAL);
-		GL11.glDepthRange(0.0f, 1.0f);
-		
-		Matrix4f project = this.transform.get(MatrixMode.PROJECT);
-		Transform.createPerspective(project, 60.0F, Presentation.aspect(), 1.0F, 100.0F);
-		this.clip.setFloats(4.0F, 16.0F, Presentation.width(), Presentation.height());
-		Matrix4f model = this.transform.get(MatrixMode.MODEL);
-		model.setIdentity();
-		
-		this.testVAO.bind();
-		this.testIndBuf.bind();
-		this.basic.bind();
-		
-		this.basicColor.upload(this.basic);
-		this.clip.upload(this.basic);
-		
-		Matrix4f modelStart = Matrix4f.load(model, null);
-		
-		for (int i = -1; i <= 1; i++)
-		{
-			for (int j = -1; j <= 1; j++)
-			{
-				model.translate(new Vector3f(i * 5.0F, 0.0F, j * 5.0F));
-				model.rotate((float) Math.PI / 4, new Vector3f(0.0F, 1.0F, 0.0F));
-				
-				Matrix4f mvp = this.transform.getMVP();
-				this.mvpMatrix.setMatrix(mvp);
-				Matrix4f mv = this.transform.getResult(0b011);
-				this.mvMatrix.setMatrix(mv);
-				
-				this.mvpMatrix.upload(this.basic);
-				this.mvMatrix.upload(this.basic);
-				
-				GL11.glDrawElements(GL11.GL_TRIANGLES, this.testVertexCount, GL11.GL_UNSIGNED_INT, 0);
-				
-				model.load(modelStart);
-			}
-		}
-		
-		this.basic.unbind();
-		this.testVAO.unbind();
-		this.testIndBuf.unbind();
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
-	}
-	*/
 	
 	@Override
 	public boolean isOutdated()

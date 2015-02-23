@@ -112,7 +112,7 @@ public class ShaderUniform
 			System.err.printf("Could not find uniform: %s%n", this.name);
 			for (StackTraceElement elm : Thread.currentThread().getStackTrace())
 			{
-				//System.err.println(elm);
+				System.err.println(elm);
 			}
 			return false;
 		}

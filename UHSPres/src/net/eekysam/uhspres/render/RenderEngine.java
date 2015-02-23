@@ -3,6 +3,7 @@ package net.eekysam.uhspres.render;
 import java.util.Random;
 
 import net.eekysam.uhspres.render.fbo.EnumDrawBufferLocs;
+import net.eekysam.uhspres.render.lights.PointLight;
 import net.eekysam.uhspres.render.shader.Program;
 import net.eekysam.uhspres.render.shader.ProgramLinkInfo;
 import net.eekysam.uhspres.render.shading.ShadeGeometry;
@@ -36,7 +37,9 @@ public class RenderEngine
 	
 	public Program blit;
 	public Program mulblit;
+	public Program lumblit;
 	public Program vblur;
+	public Program light;
 	
 	public final Shaders shaders;
 	
@@ -49,7 +52,9 @@ public class RenderEngine
 		
 		this.blit = new Program(EnumDrawBufferLocs.DIFFUSE);
 		this.mulblit = new Program(EnumDrawBufferLocs.DIFFUSE);
+		this.lumblit = new Program(EnumDrawBufferLocs.DIFFUSE);
 		this.vblur = new Program(EnumDrawBufferLocs.VALUE);
+		this.light = new Program(EnumDrawBufferLocs.DIFFUSE);
 		
 		this.geometryPass = new ShadeGeometry(this);
 		this.ssaoPass = new ShadeSSAO(this, this.vblur, 4, 128, new Random());
@@ -69,13 +74,25 @@ public class RenderEngine
 		this.shaders.mulblitF.attach(this.mulblit);
 		this.linkProgram(this.mulblit, this.shaders.mulblitA.file);
 		
+		this.lumblit.create();
+		this.shaders.blitV.attach(this.lumblit);
+		this.shaders.lumblitF.attach(this.lumblit);
+		this.linkProgram(this.lumblit, this.shaders.lumblitA.file);
+		
 		this.vblur.create();
 		this.shaders.blitV.attach(this.vblur);
 		this.shaders.vblurF.attach(this.vblur);
 		this.linkProgram(this.vblur, this.shaders.vblurA.file);
 		
+		this.light.create();
+		this.shaders.lightV.attach(this.light);
+		this.shaders.lightF.attach(this.light);
+		this.linkProgram(this.light, this.shaders.lightA.file);
+		
 		this.geometryPass.create();
 		this.ssaoPass.create();
+		
+		PointLight.createIcos();
 	}
 	
 	public boolean linkProgram(Program program, String name)
