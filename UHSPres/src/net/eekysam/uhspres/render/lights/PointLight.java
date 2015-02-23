@@ -21,6 +21,17 @@ public class PointLight extends Light
 	public float attLin;
 	public float attQuad;
 	
+	public PointLight(Vector3f position, Vector4f color, float spec, float power, float shin)
+	{
+		this.position = position;
+		this.color = color;
+		this.spec = this.color;
+		this.spec.scale(spec);
+		this.spec.z = this.color.z;
+		this.power = power;
+		this.shin = shin;
+	}
+	
 	public PointLight(Vector3f position, Vector4f color, Vector4f spec, float power, float shin)
 	{
 		super();

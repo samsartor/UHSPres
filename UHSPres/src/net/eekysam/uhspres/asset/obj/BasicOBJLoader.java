@@ -1,9 +1,11 @@
-package net.eekysam.uhspres.asset;
+package net.eekysam.uhspres.asset.obj;
 
 import java.util.List;
 import java.util.Scanner;
 
-public class OBJLoader
+import net.eekysam.uhspres.asset.GameAsset;
+
+public class BasicOBJLoader
 {
 	private GameAsset asset;
 	private List<Integer> inds;
@@ -12,7 +14,7 @@ public class OBJLoader
 	private int vertNum = -1;
 	private int faceNum = -1;
 
-	public OBJLoader(GameAsset asset, List<Integer> inds, List<Float> verts, int polySize)
+	public BasicOBJLoader(GameAsset asset, List<Integer> inds, List<Float> verts, int polySize)
 	{
 		this.asset = asset;
 		this.inds = inds;
