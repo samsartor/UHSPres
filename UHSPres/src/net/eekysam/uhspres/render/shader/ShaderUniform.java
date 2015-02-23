@@ -44,14 +44,14 @@ public class ShaderUniform
 		UNIFORM_MATRIX_2FV("glUniformMatrix2", boolean.class, FloatBuffer.class),
 		UNIFORM_MATRIX_3FV("glUniformMatrix3", boolean.class, FloatBuffer.class),
 		UNIFORM_MATRIX_4FV("glUniformMatrix4", boolean.class, FloatBuffer.class);
-
+		
 		public final Method call;
-
+		
 		EnumUniformCalls(String name, Class<?>... types)
 		{
 			this(GL20.class, name, types);
 		}
-
+		
 		EnumUniformCalls(Class<?> gl, String name, Class<?>... types)
 		{
 			Method call;
@@ -73,16 +73,27 @@ public class ShaderUniform
 			this.call = call;
 		}
 	}
-
+	
 	public String name;
 	private Method call = null;
 	private Object[] data = null;
-
+	
+	public ShaderUniform()
+	{
+		this("");
+	}
+	
 	public ShaderUniform(String name)
 	{
 		this.name = name;
 	}
-
+	
+	public boolean upload(Program program, String name)
+	{
+		this.name = name;
+		return this.upload(program);
+	}
+	
 	public boolean upload(Program program)
 	{
 		int pid = program.getProgram();
@@ -97,7 +108,12 @@ public class ShaderUniform
 		int loc = GL20.glGetUniformLocation(pid, this.name);
 		if (loc == -1)
 		{
+			
 			System.err.printf("Could not find uniform: %s%n", this.name);
+			for (StackTraceElement elm : Thread.currentThread().getStackTrace())
+			{
+				//System.err.println(elm);
+			}
 			return false;
 		}
 		Object[] pars = new Object[this.data.length + 1];
@@ -118,25 +134,25 @@ public class ShaderUniform
 		}
 		return true;
 	}
-
+	
 	public void set(EnumUniformCalls call, Object... data)
 	{
 		this.call = call.call;
 		this.data = data;
 	}
-
+	
 	public void setInt(int value)
 	{
 		this.call = EnumUniformCalls.UNIFORM_1I.call;
 		this.data = new Object[] { value };
 	}
-
+	
 	public void setFloat(float value)
 	{
 		this.call = EnumUniformCalls.UNIFORM_1F.call;
 		this.data = new Object[] { value };
 	}
-
+	
 	public void setInts(int... value)
 	{
 		switch (value.length)
@@ -163,13 +179,13 @@ public class ShaderUniform
 				return;
 		}
 	}
-
+	
 	public void setInts(IntBuffer buf)
 	{
 		this.call = EnumUniformCalls.UNIFORM_1IV.call;
 		this.data = new Object[] { buf };
 	}
-
+	
 	public void setFloats(float... value)
 	{
 		switch (value.length)
@@ -196,13 +212,13 @@ public class ShaderUniform
 				return;
 		}
 	}
-
+	
 	public void setFloats(FloatBuffer buf)
 	{
 		this.call = EnumUniformCalls.UNIFORM_1FV.call;
 		this.data = new Object[] { buf };
 	}
-
+	
 	public void setVector(Vector value)
 	{
 		if (value instanceof Vector2f)
@@ -222,7 +238,7 @@ public class ShaderUniform
 			this.setVectors((Quaternion) value);
 		}
 	}
-
+	
 	private void setVectors(int size, Vector... value)
 	{
 		FloatBuffer buf = BufferUtils.createFloatBuffer(size * value.length);
@@ -233,31 +249,31 @@ public class ShaderUniform
 		buf.flip();
 		this.data = new Object[] { buf };
 	}
-
+	
 	public void setVectors(Vector2f... value)
 	{
 		this.call = EnumUniformCalls.UNIFORM_2FV.call;
 		this.setVectors(2, value);
 	}
-
+	
 	public void setVectors(Vector3f... value)
 	{
 		this.call = EnumUniformCalls.UNIFORM_3FV.call;
 		this.setVectors(3, value);
 	}
-
+	
 	public void setVectors(Vector4f... value)
 	{
 		this.call = EnumUniformCalls.UNIFORM_4FV.call;
 		this.setVectors(4, value);
 	}
-
+	
 	public void setVectors(Quaternion... value)
 	{
 		this.call = EnumUniformCalls.UNIFORM_4FV.call;
 		this.setVectors(4, value);
 	}
-
+	
 	public void setFloats(int size, float[] data)
 	{
 		if (data.length % size != 0)
@@ -283,7 +299,7 @@ public class ShaderUniform
 		}
 		this.data = new Object[] { GLUtils.bufferFloats(data) };
 	}
-
+	
 	public void setInts(int size, int[] data)
 	{
 		if (data.length % size != 0)
@@ -309,12 +325,12 @@ public class ShaderUniform
 		}
 		this.data = new Object[] { GLUtils.bufferInts(data) };
 	}
-
+	
 	public void setMatrix(Matrix value)
 	{
 		this.setMatrix(value, false);
 	}
-
+	
 	public void setMatrix(Matrix value, boolean transpose)
 	{
 		if (value instanceof Matrix2f)
@@ -330,7 +346,7 @@ public class ShaderUniform
 			this.setMatricies(transpose, (Matrix4f) value);
 		}
 	}
-
+	
 	private void setMatricies(int size, boolean transpose, Matrix... value)
 	{
 		FloatBuffer buf = BufferUtils.createFloatBuffer(size * size * value.length);
@@ -341,45 +357,45 @@ public class ShaderUniform
 		buf.flip();
 		this.data = new Object[] { transpose, buf };
 	}
-
+	
 	public void setMatricies(Matrix2f... value)
 	{
 		this.setMatricies(false, value);
 	}
-
+	
 	public void setMatricies(boolean transpose, Matrix2f... value)
 	{
 		this.call = EnumUniformCalls.UNIFORM_MATRIX_2FV.call;
 		this.setMatricies(2, transpose, value);
 	}
-
+	
 	public void setMatricies(Matrix3f... value)
 	{
 		this.setMatricies(false, value);
 	}
-
+	
 	public void setMatricies(boolean transpose, Matrix3f... value)
 	{
 		this.call = EnumUniformCalls.UNIFORM_MATRIX_3FV.call;
 		this.setMatricies(3, transpose, value);
 	}
-
+	
 	public void setMatricies(Matrix4f... value)
 	{
 		this.setMatricies(false, value);
 	}
-
+	
 	public void setMatricies(boolean transpose, Matrix4f... value)
 	{
 		this.call = EnumUniformCalls.UNIFORM_MATRIX_4FV.call;
 		this.setMatricies(4, transpose, value);
 	}
-
+	
 	public void setColorRGB(Color value)
 	{
 		this.setColorsRGB(value);
 	}
-
+	
 	public void setColorsRGB(Color... value)
 	{
 		FloatBuffer buf = BufferUtils.createFloatBuffer(3 * value.length);
@@ -393,12 +409,12 @@ public class ShaderUniform
 		this.call = EnumUniformCalls.UNIFORM_3FV.call;
 		this.data = new Object[] { buf };
 	}
-
+	
 	public void setColorRGBA(Color value)
 	{
 		this.setColorsRGBA(value);
 	}
-
+	
 	public void setColorsRGBA(Color... value)
 	{
 		FloatBuffer buf = BufferUtils.createFloatBuffer(4 * value.length);
@@ -412,7 +428,7 @@ public class ShaderUniform
 		this.call = EnumUniformCalls.UNIFORM_4FV.call;
 		this.data = new Object[] { buf };
 	}
-
+	
 	private Object[] getArray(Object val)
 	{
 		if (val instanceof Object[])

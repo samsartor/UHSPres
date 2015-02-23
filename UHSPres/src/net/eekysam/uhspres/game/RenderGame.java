@@ -1,13 +1,11 @@
 package net.eekysam.uhspres.game;
 
-import java.awt.Color;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import net.eekysam.uhspres.Presentation;
-import net.eekysam.uhspres.asset.Asset;
 import net.eekysam.uhspres.asset.GameAsset;
 import net.eekysam.uhspres.asset.OBJLoader;
 import net.eekysam.uhspres.font.Font;
@@ -17,11 +15,8 @@ import net.eekysam.uhspres.render.RenderEngine;
 import net.eekysam.uhspres.render.Transform;
 import net.eekysam.uhspres.render.Transform.MatrixMode;
 import net.eekysam.uhspres.render.fbo.DiffuseFBO;
-import net.eekysam.uhspres.render.fbo.EnumDrawBufferLocs;
 import net.eekysam.uhspres.render.fbo.GeometryFBO;
-import net.eekysam.uhspres.render.shader.Program;
-import net.eekysam.uhspres.render.shader.Shader;
-import net.eekysam.uhspres.render.shader.Shader.ShaderType;
+import net.eekysam.uhspres.render.fbo.ValueFBO;
 import net.eekysam.uhspres.render.shader.ShaderUniform;
 import net.eekysam.uhspres.render.verts.VertexArray;
 import net.eekysam.uhspres.render.verts.VertexBuffer;
@@ -34,31 +29,44 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class RenderGame implements IScreenLayer
 {
+	private class UpdateGeometryMat implements Runnable
+	{
+		public Transform transform;
+		
+		public UpdateGeometryMat(Transform transform)
+		{
+			this.transform = transform;
+		}
+		
+		@Override
+		public void run()
+		{
+			RenderGame.this.theEngine.geometryPass.uploadMV(this.transform.getResult(0b011));
+			RenderGame.this.theEngine.geometryPass.uploadMVP(this.transform.getResult(0b111));
+		}
+	}
+	
 	public Timer timer = null;
+	public float partial;
 	public Font testFont;
-
+	
 	public VertexArray testVAO;
 	public VertexBuffer testPosBuf;
 	public VertexBuffer testNormBuf;
 	public VertexBuffer testIndBuf;
 	public int testVertexCount;
-
-	private Program basic;
-	private Shader basicVert;
-	private Shader basicFrag;
-	private ShaderUniform basicColor;
-	private ShaderUniform clip;
-
+	
 	public final RenderEngine theEngine;
-
-	public final Transform transform;
-	public final ShaderUniform mvpMatrix;
-	public final ShaderUniform mvMatrix;
-
+	
+	public final Transform cameraTransform;
+	public final Transform lightTransform;
+	
 	public CameraView veiw;
-
+	
 	public GeometryFBO geometry;
-
+	public ValueFBO valSwap;
+	public ValueFBO occlusion;
+	
 	public RenderGame(RenderEngine engine)
 	{
 		this.theEngine = engine;
@@ -71,7 +79,7 @@ public class RenderGame implements IScreenLayer
 			e.printStackTrace();
 		}
 		this.testFont.load(Presentation.instance().theAssetLoader);
-
+		
 		GameAsset testAsset = new GameAsset("test.obj");
 		ArrayList<Float> testPos = new ArrayList<Float>();
 		ArrayList<Integer> testInd = new ArrayList<Integer>();
@@ -103,31 +111,19 @@ public class RenderGame implements IScreenLayer
 		this.testNormBuf.attribPointer(1, 3, GL11.GL_FLOAT, false, 0, 0);
 		this.testVAO.unbind();
 		this.testVertexCount = testInd.size();
-
-		Asset basicAsset = new Asset("shaders/basic");
-		this.basic = new Program(EnumDrawBufferLocs.DIFFUSE);
-		this.basicFrag = new Shader(ShaderType.FRAGMENT, basicAsset);
-		this.basicVert = new Shader(ShaderType.VERTEX, basicAsset);
-		this.basic.create();
-		this.theEngine.createShader(this.basicFrag);
-		this.theEngine.createShader(this.basicVert);
-		this.basicFrag.attach(this.basic);
-		this.basicVert.attach(this.basic);
-		this.theEngine.linkProgram(this.basic, basicAsset.file);
-
-		this.basicColor = new ShaderUniform("un_color");
-		this.basicColor.setColorRGBA(new Color(0xFFF2C1));
-		this.clip = new ShaderUniform("un_clip");
-		this.mvpMatrix = new ShaderUniform("un_mvp");
-		this.mvMatrix = new ShaderUniform("un_mv");
-
-		this.transform = new Transform();
+		
+		this.cameraTransform = new Transform();
+		this.lightTransform = new Transform();
 		this.veiw = new CameraView();
-
+		
 		this.geometry = new GeometryFBO(Presentation.width(), Presentation.height());
 		this.geometry.create();
+		this.valSwap = new ValueFBO(Presentation.width(), Presentation.height());
+		this.valSwap.create();
+		this.occlusion = new ValueFBO(Presentation.width(), Presentation.height());
+		this.occlusion.create();
 	}
-
+	
 	@Override
 	public void render(RenderEngine engine, DiffuseFBO target)
 	{
@@ -137,103 +133,168 @@ public class RenderGame implements IScreenLayer
 			this.timer.resetTimer();
 			this.timer.partialTicks += 1;
 		}
-
+		
 		for (int i = 0; i < this.timer.elapsedTicks; i++)
 		{
 			this.tickGame();
 		}
-
-		this.veiw.update(this.transform.get(MatrixMode.VIEW), new Vector3f(0.0F, 0.0F, 1.0F));
-
-		this.geometry.bind();
-		GL11.glClearColor(0, 0, 0, 0);
-		GL11.glClearDepth(1.0F);
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
-		this.renderGame(this.timer.partialTicks, engine, target);
-
+		
+		this.renderGame();
+		
+		GL11.glDisable(GL11.GL_BLEND);
+		
 		target.bind();
+		ShaderUniform un = new ShaderUniform();
+		this.theEngine.mulblit.bind();
+		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.geometry.getDiffuse());
-		engine.bindBlit(0);
-		GL11.glEnable(GL11.GL_BLEND);
+		un.setInt(0);
+		un.upload(this.theEngine.mulblit, "samp_diffuse");
+		GL13.glActiveTexture(GL13.GL_TEXTURE1);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.occlusion.getValue());
+		un.setInt(1);
+		un.upload(this.theEngine.mulblit, "samp_value");
+		
 		this.geometry.drawQuad();
-		GL11.glDisable(GL11.GL_BLEND);
-		engine.unbindBlit();
+		
+		this.theEngine.mulblit.unbind();
+		
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-
+		GL13.glActiveTexture(GL13.GL_TEXTURE1);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		
 		this.timer.update();
 	}
-
+	
 	public void tickGame()
 	{
-
+		
 	}
-
-	public void renderGame(float partial, RenderEngine engine, DiffuseFBO target)
+	
+	public void renderGame()
 	{
+		this.veiw.update(this.cameraTransform.get(MatrixMode.VIEW), new Vector3f(0.0F, 0.0F, 1.0F));
+		
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthMask(true);
 		GL11.glDepthFunc(GL11.GL_LEQUAL);
 		GL11.glDepthRange(0.0f, 1.0f);
-
-		Matrix4f project = this.transform.get(MatrixMode.PROJECT);
+		
+		Matrix4f project = this.cameraTransform.get(MatrixMode.PROJECT);
 		Transform.createPerspective(project, 60.0F, Presentation.aspect(), 1.0F, 100.0F);
-		this.clip.setFloats(4.0F, 16.0F, Presentation.width(), Presentation.height());
-		Matrix4f model = this.transform.get(MatrixMode.MODEL);
+		Matrix4f model = this.cameraTransform.get(MatrixMode.MODEL);
 		model.setIdentity();
-
+		
+		this.geometry.bind();
+		GL11.glClearColor(0, 0, 0, 0);
+		GL11.glClearDepth(1.0F);
+		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
+		
+		this.theEngine.geometryPass.start(this.geometry);
+		this.renderGameGeo(this.cameraTransform, new UpdateGeometryMat(this.cameraTransform));
+		this.theEngine.geometryPass.end(this.geometry);
+		
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		
+		this.theEngine.ssaoPass.renderOcclusion(Presentation.width(), Presentation.height(), this.geometry, this.valSwap, this.occlusion, 3.0F, project);
+	}
+	
+	public void renderGameGeo(Transform transform, Runnable onMatrixChange)
+	{
+		Matrix4f model = transform.get(MatrixMode.MODEL);
+		Matrix4f modelStart = Matrix4f.load(model, null);
+		
 		this.testVAO.bind();
 		this.testIndBuf.bind();
-		this.basic.bind();
-
-		this.basicColor.upload(this.basic);
-		this.clip.upload(this.basic);
-
-		Matrix4f modelStart = Matrix4f.load(model, null);
-
+		
 		for (int i = -1; i <= 1; i++)
 		{
 			for (int j = -1; j <= 1; j++)
 			{
 				model.translate(new Vector3f(i * 5.0F, 0.0F, j * 5.0F));
 				model.rotate((float) Math.PI / 4, new Vector3f(0.0F, 1.0F, 0.0F));
-
+				
+				onMatrixChange.run();
+				
+				GL11.glDrawElements(GL11.GL_TRIANGLES, this.testVertexCount, GL11.GL_UNSIGNED_INT, 0);
+				
+				model.load(modelStart);
+			}
+		}
+		
+		this.testVAO.unbind();
+		this.testIndBuf.unbind();
+	}
+	
+	/*
+	public void renderGame(float partial, RenderEngine engine, DiffuseFBO target)
+	{
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glDepthMask(true);
+		GL11.glDepthFunc(GL11.GL_LEQUAL);
+		GL11.glDepthRange(0.0f, 1.0f);
+		
+		Matrix4f project = this.transform.get(MatrixMode.PROJECT);
+		Transform.createPerspective(project, 60.0F, Presentation.aspect(), 1.0F, 100.0F);
+		this.clip.setFloats(4.0F, 16.0F, Presentation.width(), Presentation.height());
+		Matrix4f model = this.transform.get(MatrixMode.MODEL);
+		model.setIdentity();
+		
+		this.testVAO.bind();
+		this.testIndBuf.bind();
+		this.basic.bind();
+		
+		this.basicColor.upload(this.basic);
+		this.clip.upload(this.basic);
+		
+		Matrix4f modelStart = Matrix4f.load(model, null);
+		
+		for (int i = -1; i <= 1; i++)
+		{
+			for (int j = -1; j <= 1; j++)
+			{
+				model.translate(new Vector3f(i * 5.0F, 0.0F, j * 5.0F));
+				model.rotate((float) Math.PI / 4, new Vector3f(0.0F, 1.0F, 0.0F));
+				
 				Matrix4f mvp = this.transform.getMVP();
 				this.mvpMatrix.setMatrix(mvp);
 				Matrix4f mv = this.transform.getResult(0b011);
 				this.mvMatrix.setMatrix(mv);
-
+				
 				this.mvpMatrix.upload(this.basic);
 				this.mvMatrix.upload(this.basic);
-
+				
 				GL11.glDrawElements(GL11.GL_TRIANGLES, this.testVertexCount, GL11.GL_UNSIGNED_INT, 0);
-
+				
 				model.load(modelStart);
 			}
 		}
-
+		
 		this.basic.unbind();
 		this.testVAO.unbind();
 		this.testIndBuf.unbind();
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 	}
-
+	*/
+	
 	@Override
 	public boolean isOutdated()
 	{
 		return true;
 	}
-
+	
 	@Override
 	public boolean hasContent()
 	{
 		return true;
 	}
-
+	
 	@Override
 	public boolean pauseRequested()
 	{
 		return false;
 	}
-
+	
 }

@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import net.eekysam.uhspres.Presentation;
 import net.eekysam.uhspres.game.RenderGame;
 import net.eekysam.uhspres.render.fbo.DiffuseFBO;
+import net.eekysam.uhspres.render.shader.ShaderUniform;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -21,14 +22,14 @@ public class GameScreen
 		FRONT_UI_LAYER,
 		FULL_UI_LAYER;
 	}
-
+	
 	private EnumMap<EnumScreenLayers, IScreenLayer> layers;
 	public final RenderEngine engine;
-
+	
 	public RenderGame theGame;
-
+	
 	private DiffuseFBO target;
-
+	
 	public GameScreen(RenderEngine engine)
 	{
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -39,14 +40,16 @@ public class GameScreen
 		this.theGame = new RenderGame(this.engine);
 		this.layers.put(EnumScreenLayers.GAME_LAYER, this.theGame);
 	}
-
+	
 	public IScreenLayer getLayer(EnumScreenLayers layer)
 	{
 		return this.layers.get(layer);
 	}
-
+	
 	public void render()
 	{
+		ShaderUniform un = new ShaderUniform();
+		
 		GL11.glClearColor(0.5F, 0.5F, 0.8F, 1.0F);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		GL20.glBlendEquationSeparate(GL14.GL_FUNC_ADD, GL14.GL_FUNC_ADD);
@@ -62,11 +65,13 @@ public class GameScreen
 				this.target.unbind();
 				GL13.glActiveTexture(GL13.GL_TEXTURE0);
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.target.getDiffuse());
-				this.engine.bindBlit(0);
+				this.engine.blit.bind();
+				un.setInt(0);
+				un.upload(this.engine.blit, "samp_diffuse");
 				GL11.glEnable(GL11.GL_BLEND);
 				this.target.drawQuad();
 				GL11.glDisable(GL11.GL_BLEND);
-				this.engine.unbindBlit();
+				this.engine.blit.unbind();
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 			}
 		}
