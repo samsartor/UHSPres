@@ -71,7 +71,7 @@ public class RenderGame implements IScreenLayer
 	public ValueFBO occlusion;
 	public DiffuseFBO light;
 	
-	public Vector4f ambient = new Vector4f(86 / 255.0F, 85 / 255.0F, 79 / 255.0F, 1.0F);
+	public Vector4f ambient = new Vector4f(0.4F, 0.4F, 0.4F, 1.0F);
 	
 	public ArrayList<PointLight> lights = new ArrayList<PointLight>();
 	
@@ -133,7 +133,9 @@ public class RenderGame implements IScreenLayer
 		this.light = new DiffuseFBO(Presentation.width(), Presentation.height());
 		this.light.create();
 		
-		this.lights.add(new PointLight(new Vector3f(5.0F, 5.0F, 5.0F), new Vector4f(185 / 255.0F, 190 / 255.0F, 200 / 255.0F, 1.0F), 15.0F, 0.0F, 0.0F, 0.2F));
+		this.lights.add(new PointLight(new Vector3f(5.0F, 5.0F, 5.0F), new Vector4f(0.2F, 0.2F, 0.2F, 1.0F), new Vector4f(0.1F, 0.1F, 0.1F, 1.0F), 0.8F, 80.0F));
+		this.lights.add(new PointLight(new Vector3f(0.0F, -1.0F, 0.0F), new Vector4f(0.08F, 0.08F, 0.3F, 1.0F), new Vector4f(0.04F, 0.04F, 0.07F, 1.0F), 0.6F, 80.0F));
+		this.lights.add(new PointLight(new Vector3f(-10.0F, 10.0F, 5.0F), new Vector4f(0.5F, 0.42F, 0.35F, 1.0F), new Vector4f(0.22F, 0.20F, 0.18F, 1.0F), 0.9F, 80.0F));
 	}
 	
 	@Override
@@ -244,8 +246,6 @@ public class RenderGame implements IScreenLayer
 		GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
 		
 		this.theEngine.light.bind();
-		PointLight.icosVAO.bind();
-		PointLight.icosIndBuf.bind();
 		PointLight.uploadCommonUniforms(this.cameraTransform, this.theEngine.light);
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.geometry.getNormal());
@@ -258,10 +258,8 @@ public class RenderGame implements IScreenLayer
 		for (PointLight light : this.lights)
 		{
 			light.uploadUniforms(this.theEngine.light);
-			GL11.glDrawElements(GL11.GL_TRIANGLES, 20 * 3, GL11.GL_UNSIGNED_INT, 0);
+			this.light.drawQuad();
 		}
-		PointLight.icosIndBuf.unbind();
-		PointLight.icosVAO.unbind();
 		
 		GL11.glDisable(GL11.GL_BLEND);
 	}

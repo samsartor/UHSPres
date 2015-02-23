@@ -30,7 +30,6 @@ public class Shaders
 	public final Asset shadowA;
 	public final Shader shadowF;
 	public final Asset lightA;
-	public final Shader lightV;
 	public final Shader lightF;
 	
 	public Shaders()
@@ -59,7 +58,6 @@ public class Shaders
 		this.posV = new Shader(ShaderType.VERTEX, this.posA);
 		this.depthF = new Shader(ShaderType.FRAGMENT, this.depthA);
 		this.shadowF = new Shader(ShaderType.FRAGMENT, this.shadowA);
-		this.lightV = new Shader(ShaderType.VERTEX, this.lightA);
 		this.lightF = new Shader(ShaderType.FRAGMENT, this.lightA);
 	}
 	
@@ -78,7 +76,6 @@ public class Shaders
 		this.createShader(this.shadowF);
 		this.createShader(this.ssaoF);
 		this.createShader(this.lightF);
-		this.createShader(this.lightV);
 	}
 	
 	public boolean createShader(Shader shader)

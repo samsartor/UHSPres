@@ -3,7 +3,6 @@ package net.eekysam.uhspres.render;
 import java.util.Random;
 
 import net.eekysam.uhspres.render.fbo.EnumDrawBufferLocs;
-import net.eekysam.uhspres.render.lights.PointLight;
 import net.eekysam.uhspres.render.shader.Program;
 import net.eekysam.uhspres.render.shader.ProgramLinkInfo;
 import net.eekysam.uhspres.render.shading.ShadeGeometry;
@@ -85,14 +84,12 @@ public class RenderEngine
 		this.linkProgram(this.vblur, this.shaders.vblurA.file);
 		
 		this.light.create();
-		this.shaders.lightV.attach(this.light);
+		this.shaders.blitV.attach(this.light);
 		this.shaders.lightF.attach(this.light);
 		this.linkProgram(this.light, this.shaders.lightA.file);
 		
 		this.geometryPass.create();
 		this.ssaoPass.create();
-		
-		PointLight.createIcos();
 	}
 	
 	public boolean linkProgram(Program program, String name)

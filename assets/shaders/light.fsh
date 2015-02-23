@@ -5,31 +5,23 @@ uniform sampler2D samp_depth;
 
 uniform vec3 un_light_pos;
 uniform vec4 un_light_color;
-
-uniform float un_light_att_con;
-uniform float un_light_att_lin;
-uniform float un_light_att_quad;
+uniform vec4 un_light_spec;
+uniform float un_light_power;
+uniform float un_shin;
 
 uniform mat4 un_mv;
 uniform mat4 un_inv_pmat;
 
-uniform vec2 un_screen_size;
-
 out vec4 out_diffuse;
+in vec2 var_texCoord;
 
 void main() 
-{
-	if (gl_FrontFacing)
-	{
-		discard;
-	}
+{	
+	float depth = texture(samp_depth, var_texCoord).r;
 	
-	vec2 coord = gl_FragCoord.xy / un_screen_size;
-	float depth = texture(samp_depth, coord).r;
+	vec3 normal = texture(samp_norm, var_texCoord).rgb;
 	
-	vec3 normal = texture(samp_norm, coord).rgb;
-	
-	vec4 pos = vec4(coord * 2 - 1, depth, 1.0);
+	vec4 pos = vec4(var_texCoord * 2 - 1, depth, 1.0);
 	pos = un_inv_pmat * pos;
 	pos /= pos.w;
 	
@@ -40,11 +32,11 @@ void main()
 	
 	float dotl = dot(normal, lightDir / dist);
 	
-	if (dotl < 0)
-	{
-		discard;
-	}
+	vec3 view = normalize(pos.xyz);
 	
-	float att = 1.0 / (un_light_att_con + un_light_att_lin * dist + un_light_att_quad * dist * dist);
-    out_diffuse = att * un_light_color * dotl / att;
+	if (dotl > 0.0)
+	{
+		float dotr = max(dot(reflect(lightDir / dist, normal), view), 0);
+		out_diffuse = un_light_color * un_light_power * dotl + un_light_spec * un_light_power * pow(dotr , un_shin);
+	}
 }

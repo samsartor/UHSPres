@@ -110,9 +110,10 @@ public class ShaderUniform
 		{
 			
 			System.err.printf("Could not find uniform: %s%n", this.name);
-			for (StackTraceElement elm : Thread.currentThread().getStackTrace())
+			StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+			for (int i = 1; i < trace.length; i++)
 			{
-				System.err.println(elm);
+				System.err.println(trace[i]);
 			}
 			return false;
 		}
