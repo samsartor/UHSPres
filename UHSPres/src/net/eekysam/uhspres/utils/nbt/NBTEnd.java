@@ -10,18 +10,18 @@ public class NBTEnd extends NBTTag
 	{
 		super(null);
 	}
-
+	
 	@Override
 	public byte getId()
 	{
 		return 0;
 	}
-
+	
 	@Override
 	void writePayload(DataOutput dataoutput) throws IOException
 	{
 	}
-
+	
 	@Override
 	void readPayload(DataInput datainput, int depth) throws IOException
 	{

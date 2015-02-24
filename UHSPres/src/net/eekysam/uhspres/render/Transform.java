@@ -13,22 +13,22 @@ public class Transform
 		MODEL(0b001),
 		VIEW(0b010),
 		PROJECT(0b100);
-
+		
 		public final int bit;
-
+		
 		MatrixMode(int bit)
 		{
 			this.bit = bit;
 		}
-
+		
 		public boolean isInCode(int code)
 		{
 			return (this.bit & code) != 0;
 		}
 	}
-
+	
 	private final EnumMap<MatrixMode, Matrix4f> transform = new EnumMap<MatrixMode, Matrix4f>(MatrixMode.class);
-
+	
 	public Transform()
 	{
 		this.transform.put(MatrixMode.MODEL, new Matrix4f());
@@ -36,7 +36,7 @@ public class Transform
 		this.transform.put(MatrixMode.PROJECT, new Matrix4f());
 		this.setIdentity(0b111);
 	}
-
+	
 	public int getCode(MatrixMode... modes)
 	{
 		int code = 0;
@@ -46,7 +46,7 @@ public class Transform
 		}
 		return code;
 	}
-
+	
 	public void setIdentity(int code)
 	{
 		for (MatrixMode mode : MatrixMode.values())
@@ -57,19 +57,19 @@ public class Transform
 			}
 		}
 	}
-
+	
 	public Matrix4f get(MatrixMode mode)
 	{
 		return this.transform.get(mode);
 	}
-
+	
 	public Matrix4f getCopy(MatrixMode mode)
 	{
 		Matrix4f copy = new Matrix4f();
 		copy.load(this.get(mode));
 		return copy;
 	}
-
+	
 	public Matrix4f getResult(int code)
 	{
 		Matrix4f result = new Matrix4f();
@@ -84,42 +84,42 @@ public class Transform
 		}
 		return result;
 	}
-
+	
 	public Matrix4f getMVP()
 	{
 		return this.getResult(0b111);
 	}
-
+	
 	public void set(MatrixMode mode, Matrix4f matrix)
 	{
 		this.get(mode).load(matrix);
 	}
-
+	
 	public void translate(MatrixMode mode, Vector3f vec)
 	{
 		this.get(mode).translate(vec);
 	}
-
+	
 	public void translate(MatrixMode mode, Vector2f vec)
 	{
 		this.get(mode).translate(vec);
 	}
-
+	
 	public void rotate(MatrixMode mode, Vector3f axis, float angle)
 	{
 		this.get(mode).rotate(angle, axis);
 	}
-
+	
 	public void scale(MatrixMode mode, Vector3f vec)
 	{
 		this.get(mode).scale(vec);
 	}
-
+	
 	public void setIdentity(MatrixMode mode)
 	{
 		this.get(mode).setIdentity();
 	}
-
+	
 	public static void createPerspectiveFrustrum(Matrix4f mat, float n, float f, float r, float l, float t, float b)
 	{
 		mat.setZero();
@@ -131,12 +131,12 @@ public class Transform
 		mat.m21 = (t + b) / (t - b);
 		mat.m20 = (r + l) / (r - l);
 	}
-
+	
 	public static void createPerspectiveFrustrum(Matrix4f mat, float near, float far, float width, float height)
 	{
 		createPerspectiveFrustrum(mat, near, far, width / 2, -width / 2, height / 2, -height / 2);
 	}
-
+	
 	public static void createPerspective(Matrix4f mat, float fov, float aspect, float near, float far)
 	{
 		float height = near * (float) Math.tan((Math.PI / 180) * (fov / 2)) * 2;

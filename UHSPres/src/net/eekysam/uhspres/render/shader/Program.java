@@ -11,12 +11,12 @@ public class Program
 	private int program = -1;
 	private boolean created = false;
 	private EnumDrawBufferLocs[] outputs;
-
+	
 	public Program(EnumDrawBufferLocs... outputs)
 	{
 		this.outputs = outputs;
 	}
-
+	
 	public void create()
 	{
 		if (!this.created)
@@ -29,7 +29,7 @@ public class Program
 			this.created = true;
 		}
 	}
-
+	
 	public ProgramLinkInfo link()
 	{
 		if (!this.created)
@@ -45,7 +45,7 @@ public class Program
 		}
 		return new ProgramLinkInfo(ProgramLinkInfo.Error.NONE, null);
 	}
-
+	
 	public void delete()
 	{
 		if (this.created)
@@ -54,7 +54,7 @@ public class Program
 			this.created = false;
 		}
 	}
-
+	
 	public void bind()
 	{
 		if (this.created)
@@ -62,12 +62,12 @@ public class Program
 			GL20.glUseProgram(this.program);
 		}
 	}
-
+	
 	public void unbind()
 	{
 		GL20.glUseProgram(0);
 	}
-
+	
 	public int getProgram()
 	{
 		if (this.created)

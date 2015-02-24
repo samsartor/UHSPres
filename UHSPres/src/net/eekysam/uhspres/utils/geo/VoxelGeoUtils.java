@@ -19,6 +19,7 @@ public class VoxelGeoUtils
 	
 	/**
 	 * Gets the offset of the given vertex on the given face
+	 * 
 	 * @param face What voxel face is the vertex on
 	 * @param vert Which vertex on the given face (0 - 4)
 	 * @return The x, y, and z offsets (1 or 0)
@@ -30,6 +31,7 @@ public class VoxelGeoUtils
 	
 	/**
 	 * Gets the offset of the given vertex on the given face
+	 * 
 	 * @param face What voxel face is the vertex on ({@link EnumDir#ind})
 	 * @param vert Which vertex on the given face (0 - 4)
 	 * @return The x, y, and z offsets (1 or 0)
@@ -41,6 +43,7 @@ public class VoxelGeoUtils
 	
 	/**
 	 * Gets the offset of the given vertex on the given face
+	 * 
 	 * @param face What voxel face is the vertex on ({@link EnumDir#ind})
 	 * @param vert Which vertex on the given face (0 - 4)
 	 * @return The x, y, and z offsets (1 or -1)
@@ -52,6 +55,7 @@ public class VoxelGeoUtils
 	
 	/**
 	 * How much ambient light is occluded by a voxel corner's neighbor voxels.
+	 * 
 	 * @param edge1 Is there a voxel to the up-left of the corner
 	 * @param edge2 Is there a voxel to the up-right of the corner
 	 * @param corner Is there a voxel to the up-diagonal of the corner
@@ -67,10 +71,14 @@ public class VoxelGeoUtils
 	}
 	
 	/**
-	 * What offsets to check for voxels when calculating the occlusion of a face.
+	 * What offsets to check for voxels when calculating the occlusion of a
+	 * face.
+	 * 
 	 * @param face What face is the calculation being performed on
 	 * @param vertex Which vertex on the given face (0 - 4)
-	 * @return A length 3 array of the x, y, and z offsets of voxels that could occlude the given corner in the order {up-left, up-right, up-diagonal}
+	 * @return A length 3 array of the x, y, and z offsets of voxels that could
+	 *         occlude the given corner in the order {up-left, up-right,
+	 *         up-diagonal}
 	 */
 	public static int[][] getOccludingVoxels(EnumDir face, int vertex)
 	{
@@ -101,7 +109,7 @@ public class VoxelGeoUtils
 		facedir = (facedir + 1) % 3;
 		occs[1][facedir] = vertexOffsetSign[vertexOffsetIndices[face.ind][vertex]][facedir];
 		occs[2][facedir] = vertexOffsetSign[vertexOffsetIndices[face.ind][vertex]][facedir];
-		return occs; 
+		return occs;
 	}
 	
 	static

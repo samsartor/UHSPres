@@ -6,14 +6,14 @@ import java.io.InputStream;
 public class GameAsset
 {
 	static AssetLoader loader;
-
+	
 	public final String file;
-
+	
 	public GameAsset(GameAsset parent, String file)
 	{
 		this(parent.file + file);
 	}
-
+	
 	public GameAsset(String file)
 	{
 		this.file = file.replaceAll("\\\\", "/");
@@ -22,12 +22,12 @@ public class GameAsset
 			file = "/" + file;
 		}
 	}
-
+	
 	public boolean isDirectory()
 	{
 		return this.file.endsWith("/");
 	}
-
+	
 	/**
 	 * Gets the file or directory represented by this asset.
 	 * 
@@ -38,7 +38,7 @@ public class GameAsset
 		File dir = loader.assetDir;
 		return new File(dir, this.file);
 	}
-
+	
 	public GameAsset getParent()
 	{
 		String pfile = this.file;
@@ -57,7 +57,7 @@ public class GameAsset
 		}
 		return new GameAsset(pfile);
 	}
-
+	
 	public GameAsset[] getAssets()
 	{
 		if (!this.isDirectory())
@@ -77,12 +77,12 @@ public class GameAsset
 		}
 		return assets;
 	}
-
+	
 	public String pathFromGameDir()
 	{
 		return "/assets" + this.file;
 	}
-
+	
 	/**
 	 * Uses the {@link AssetLoader} to create an {@link InputStream} for this
 	 * asset.
@@ -95,19 +95,19 @@ public class GameAsset
 	{
 		return loader.getInput(this);
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return this.file;
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return this.pathFromGameDir().hashCode();
 	}
-
+	
 	@Override
 	public boolean equals(Object x)
 	{

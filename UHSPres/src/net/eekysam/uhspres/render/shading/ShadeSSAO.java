@@ -16,7 +16,6 @@ import net.eekysam.uhspres.utils.graphics.ImgUtils.EnumPixelByte;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -139,9 +138,9 @@ public class ShadeSSAO extends ShadePass
 		{
 			for (int j = 0; j < this.noiseSize; j++)
 			{
-				Vector3f norm = new Vector3f(trand.nextFloat() * 2 - 1, trand.nextFloat() * 2 - 1, 0.0F);
+				Vector3f norm = new Vector3f(trand.nextFloat() * 2 - 1, trand.nextFloat() * 2 - 1, trand.nextFloat() * 2 - 1);
 				norm.normalise();
-				noise.setRGB(i, j, (new Color((norm.x + 1) / 2, (norm.y + 1) / 2, 0.0F)).getRGB());
+				noise.setRGB(i, j, (new Color((norm.x + 1) / 2, (norm.y + 1) / 2, (norm.z + 1) / 2)).getRGB());
 			}
 		}
 		
@@ -149,9 +148,9 @@ public class ShadeSSAO extends ShadePass
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.noiseTexture);
 		
-		ByteBuffer bytes = ImgUtils.imageToBuffer(noise, EnumPixelByte.RED, EnumPixelByte.GREEN);
+		ByteBuffer bytes = ImgUtils.imageToBuffer(noise, EnumPixelByte.RED, EnumPixelByte.GREEN, EnumPixelByte.BLUE);
 		
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL30.GL_RG8, noise.getWidth(), noise.getHeight(), 1, GL30.GL_RG, GL11.GL_UNSIGNED_BYTE, bytes);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB8, noise.getWidth(), noise.getHeight(), 0, GL11.GL_RGB, GL11.GL_UNSIGNED_BYTE, bytes);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);

@@ -15,7 +15,7 @@ public class VertexBuffer
 	private int buffer = -1;
 	private final int bufferType;
 	private boolean created = false;
-
+	
 	public VertexBuffer(boolean isIndexBuffer)
 	{
 		if (isIndexBuffer)
@@ -27,7 +27,7 @@ public class VertexBuffer
 			this.bufferType = GL15.GL_ARRAY_BUFFER;
 		}
 	}
-
+	
 	public int getBuffer()
 	{
 		if (this.created)
@@ -36,7 +36,7 @@ public class VertexBuffer
 		}
 		return -1;
 	}
-
+	
 	public void create()
 	{
 		if (this.created)
@@ -46,7 +46,7 @@ public class VertexBuffer
 		this.buffer = GL15.glGenBuffers();
 		this.created = true;
 	}
-
+	
 	public void delete()
 	{
 		if (!this.created)
@@ -56,7 +56,7 @@ public class VertexBuffer
 		GL15.glDeleteBuffers(this.buffer);
 		this.created = false;
 	}
-
+	
 	public void bind()
 	{
 		if (this.created)
@@ -64,7 +64,7 @@ public class VertexBuffer
 			GL15.glBindBuffer(this.bufferType, this.buffer);
 		}
 	}
-
+	
 	public void unbind()
 	{
 		if (this.created)
@@ -72,7 +72,7 @@ public class VertexBuffer
 			GL15.glBindBuffer(this.bufferType, 0);
 		}
 	}
-
+	
 	public void attribPointer(int index, int size, int type, boolean normalized, int stride, int offset)
 	{
 		if (!this.created || this.bufferType != GL15.GL_ARRAY_BUFFER)
@@ -80,10 +80,11 @@ public class VertexBuffer
 			return;
 		}
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.buffer);
+		GL20.glEnableVertexAttribArray(index);
 		GL20.glVertexAttribPointer(index, size, type, normalized, stride, offset);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
-
+	
 	public void vertexData(Buffer data)
 	{
 		if (!this.created)

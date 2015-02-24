@@ -14,9 +14,9 @@ import javax.imageio.ImageIO;
 public class AssetLoader
 {
 	private static AssetLoader instance;
-
+	
 	public final File assetDir;
-
+	
 	public AssetLoader(File gameDir)
 	{
 		if (instance != null)
@@ -27,27 +27,27 @@ public class AssetLoader
 		GameAsset.loader = this;
 		instance = this;
 	}
-
+	
 	public static AssetLoader instance()
 	{
 		return instance;
 	}
-
+	
 	public BufferedImage readImage(GameAsset asset) throws IOException
 	{
 		return ImageIO.read(this.getInput(asset));
 	}
-
+	
 	public OutputStream getOutput(GameAsset asset)
 	{
 		return this.getOutput(asset, true);
 	}
-
+	
 	public OutputStream getOutput(GameAsset asset, boolean createIfMissing)
 	{
 		return this.getOutput(asset, createIfMissing, false);
 	}
-
+	
 	public OutputStream getOutput(GameAsset asset, boolean createIfMissing, boolean append)
 	{
 		try
@@ -64,7 +64,7 @@ public class AssetLoader
 			return null;
 		}
 	}
-
+	
 	public InputStream getInput(GameAsset asset)
 	{
 		try

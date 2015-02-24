@@ -8,27 +8,27 @@ import org.lwjgl.opengl.GL30;
 class FrameBufferObject
 {
 	private static final int[] colorAttachments;
-
+	
 	private int buffer = -1;
 	private int[] textures;
 	private boolean created = false;
-
+	
 	public FrameBufferObject(int textures)
 	{
 		this.textures = new int[textures];
 		Arrays.fill(this.textures, -1);
 	}
-
+	
 	public void bind()
 	{
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, this.buffer);
 	}
-
+	
 	public void unbind()
 	{
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
 	}
-
+	
 	public void delete()
 	{
 		if (!this.created)
@@ -42,7 +42,7 @@ class FrameBufferObject
 		GL30.glDeleteFramebuffers(this.buffer);
 		this.created = false;
 	}
-
+	
 	public void create()
 	{
 		if (this.created)
@@ -56,7 +56,7 @@ class FrameBufferObject
 		this.buffer = GL30.glGenFramebuffers();
 		this.created = true;
 	}
-
+	
 	public int getBuffer()
 	{
 		if (this.created)
@@ -65,7 +65,7 @@ class FrameBufferObject
 		}
 		return -1;
 	}
-
+	
 	public int getTexture(int attachment)
 	{
 		if (this.created && attachment < this.textures.length && attachment >= 0)
@@ -74,12 +74,12 @@ class FrameBufferObject
 		}
 		return -1;
 	}
-
+	
 	public int textureCount()
 	{
 		return this.textures.length;
 	}
-
+	
 	public static int glColorAttachment(int attachment)
 	{
 		if (attachment >= 16)
@@ -88,7 +88,7 @@ class FrameBufferObject
 		}
 		return colorAttachments[attachment];
 	}
-
+	
 	static
 	{
 		colorAttachments = new int[16];

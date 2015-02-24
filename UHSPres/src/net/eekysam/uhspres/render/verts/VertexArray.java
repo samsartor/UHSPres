@@ -7,7 +7,7 @@ public class VertexArray
 {
 	private int array = -1;
 	private boolean created = false;
-
+	
 	public void create()
 	{
 		if (this.created)
@@ -17,7 +17,7 @@ public class VertexArray
 		this.array = GL30.glGenVertexArrays();
 		this.created = true;
 	}
-
+	
 	public void delete()
 	{
 		if (this.created)
@@ -26,7 +26,7 @@ public class VertexArray
 			this.created = false;
 		}
 	}
-
+	
 	public void bind()
 	{
 		if (this.created)
@@ -34,7 +34,7 @@ public class VertexArray
 			GL30.glBindVertexArray(this.array);
 		}
 	}
-
+	
 	public void unbind()
 	{
 		if (this.created)
@@ -42,12 +42,12 @@ public class VertexArray
 			GL30.glBindVertexArray(0);
 		}
 	}
-
+	
 	public static void enableAttrib(int index)
 	{
 		GL20.glEnableVertexAttribArray(index);
 	}
-
+	
 	public static void disableAttrib(int index)
 	{
 		GL20.glDisableVertexAttribArray(index);

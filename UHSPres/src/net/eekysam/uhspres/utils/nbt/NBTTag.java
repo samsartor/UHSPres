@@ -7,30 +7,30 @@ import java.io.IOException;
 public abstract class NBTTag
 {
 	public static final String[] NBTTypes = new String[] { "END", "BYTE", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "BYTE[]", "STRING", "LIST", "COMPOUND", "INT[]" };
-
+	
 	private String name;
-
+	
 	public NBTTag(String name)
 	{
 		this.name = name;
 	}
-
+	
 	public NBTTag()
 	{
 		this.name = null;
 	}
-
+	
 	public void setName(String name)
 	{
 		this.name = name;
 	}
-
+	
 	public abstract byte getId();
-
+	
 	abstract void writePayload(DataOutput dataoutput) throws IOException;
-
+	
 	abstract void readPayload(DataInput datainput, int depth) throws IOException;
-
+	
 	public void write(DataOutput dataoutput) throws IOException
 	{
 		dataoutput.write(this.getId());
@@ -40,7 +40,7 @@ public abstract class NBTTag
 			this.writePayload(dataoutput);
 		}
 	}
-
+	
 	public static NBTTag read(DataInput datainput, int depth) throws IOException
 	{
 		byte id = datainput.readByte();
@@ -59,7 +59,7 @@ public abstract class NBTTag
 			return tag;
 		}
 	}
-
+	
 	public String getName()
 	{
 		if (this.name == null)
@@ -71,7 +71,7 @@ public abstract class NBTTag
 			return this.name;
 		}
 	}
-
+	
 	public static NBTTag getNewTag(byte id, String name)
 	{
 		switch (id)

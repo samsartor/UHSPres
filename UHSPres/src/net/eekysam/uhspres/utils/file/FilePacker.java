@@ -46,7 +46,7 @@ public class FilePacker
 	public static int extractZip(File zip, File outdir) throws IOException
 	{
 		ZipInputStream in = new ZipInputStream(new FileInputStream(zip));
-		int i =  extractZip(in, outdir);
+		int i = extractZip(in, outdir);
 		in.close();
 		return i;
 	}

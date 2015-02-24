@@ -8,16 +8,16 @@ public class CalculateNormals
 	private int[] indices;
 	private Vector3f[] normals;
 	private boolean equal;
-
+	
 	public CalculateNormals(float[] verts, int[] indices, boolean weightEqual)
 	{
 		this.verts = verts;
 		this.indices = indices;
 		this.equal = weightEqual;
-
+		
 		this.normals = new Vector3f[this.verts.length / 3];
 	}
-
+	
 	public void calculate()
 	{
 		int v1;
@@ -32,7 +32,7 @@ public class CalculateNormals
 			this.calcVert(v3, v1, v2);
 			this.calcVert(v2, v3, v1);
 		}
-
+		
 		for (int i = 0; i < this.normals.length; i++)
 		{
 			if (this.normals[i] == null)
@@ -45,12 +45,12 @@ public class CalculateNormals
 			}
 		}
 	}
-
+	
 	public Vector3f[] getNormals()
 	{
 		return this.normals;
 	}
-
+	
 	public float[] getNormalData()
 	{
 		float[] data = new float[this.normals.length * 3];
@@ -62,7 +62,7 @@ public class CalculateNormals
 		}
 		return data;
 	}
-
+	
 	private void calcVert(int ind1, int ind2, int ind3)
 	{
 		Vector3f v1 = this.getVertex(ind1);
@@ -84,7 +84,7 @@ public class CalculateNormals
 			Vector3f.add(this.normals[ind1], v1, this.normals[ind1]);
 		}
 	}
-
+	
 	private Vector3f getVertex(int index)
 	{
 		index *= 3;

@@ -24,14 +24,14 @@ public class Font
 	private GameAsset[] texturePaths;
 	private boolean loaded = false;
 	public float switchPerCharStat = Float.NaN;
-
+	
 	Font(int size, int lineHeight, GameAsset[] texturePaths)
 	{
 		this.size = size;
 		this.lineHeight = lineHeight;
 		this.texturePaths = texturePaths;
 	}
-
+	
 	public void load(AssetLoader render)
 	{
 		if (this.loaded)
@@ -51,12 +51,12 @@ public class Font
 			return;
 		}
 	}
-
+	
 	float getScale(float size)
 	{
 		return size / this.size;
 	}
-
+	
 	public void unload()
 	{
 		if (!this.loaded)
@@ -69,7 +69,7 @@ public class Font
 		}
 		this.loaded = false;
 	}
-
+	
 	private int loadTexture(GameAsset path, AssetLoader render) throws IOException
 	{
 		BufferedImage img = render.readImage(path);
@@ -78,14 +78,14 @@ public class Font
 			int texId = GL11.glGenTextures();
 			GL13.glActiveTexture(GL13.GL_TEXTURE0);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, texId);
-
+			
 			ByteBuffer bytes = ImgUtils.imageToBufferDefault(img);
-
+			
 			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, img.getWidth(), img.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, bytes);
 			//GLUtils.glTexParameter(GL11.GL_TEXTURE_2D, GL33.GL_TEXTURE_SWIZZLE_RGBA, GL11.GL_ONE, GL11.GL_ONE, GL11.GL_ONE, GL11.GL_RED);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-
+			
 			return texId;
 		}
 		else
@@ -93,17 +93,17 @@ public class Font
 			throw new IllegalArgumentException("Texture file does not exist: " + path);
 		}
 	}
-
+	
 	public void addGlyph(Glyph glyph, int codepoint)
 	{
 		this.glyphs.put(codepoint, glyph);
 	}
-
+	
 	public Glyph getGlyph(int codepoint)
 	{
 		return this.glyphs.get(codepoint);
 	}
-
+	
 	float segmentLength(final String text, final float scale, final boolean kerning)
 	{
 		float length = 0.0F;
@@ -122,7 +122,7 @@ public class Font
 		}
 		return length;
 	}
-
+	
 	public int segmentClip(final String text, final float scale, float length, final boolean kerning)
 	{
 		float unleng = length / scale;
@@ -147,7 +147,7 @@ public class Font
 		}
 		return text.length();
 	}
-
+	
 	public void renderSegment(final String text, final float size, float xpos, float ypos, final boolean kerning)
 	{
 		float scale = size / (this.size / 256.0F);
@@ -206,7 +206,7 @@ public class Font
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glPopMatrix();
 	}
-
+	
 	private void bindTexture(int id)
 	{
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -215,7 +215,7 @@ public class Font
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
 	}
-
+	
 	public static Font loadFont(GameAsset font) throws IOException
 	{
 		BMFFile bmf = new BMFFile(font.getInput());

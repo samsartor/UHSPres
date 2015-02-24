@@ -13,7 +13,7 @@ public class BasicOBJLoader
 	private int polySize;
 	private int vertNum = -1;
 	private int faceNum = -1;
-
+	
 	public BasicOBJLoader(GameAsset asset, List<Integer> inds, List<Float> verts, int polySize)
 	{
 		this.asset = asset;
@@ -21,7 +21,7 @@ public class BasicOBJLoader
 		this.verts = verts;
 		this.polySize = polySize;
 	}
-
+	
 	public void load()
 	{
 		this.vertNum = 0;
@@ -64,12 +64,12 @@ public class BasicOBJLoader
 		}
 		read.close();
 	}
-
+	
 	public int getFaceNum()
 	{
 		return this.faceNum;
 	}
-
+	
 	public int getVertNum()
 	{
 		return this.vertNum;

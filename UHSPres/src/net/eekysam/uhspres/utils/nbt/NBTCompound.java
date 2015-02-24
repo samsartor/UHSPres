@@ -9,33 +9,33 @@ import java.util.HashMap;
 public class NBTCompound extends NBTTag
 {
 	private HashMap<String, NBTTag> payload = new HashMap<String, NBTTag>();
-
+	
 	public NBTCompound()
 	{
 		super();
 	}
-
+	
 	public NBTCompound(String name)
 	{
 		super(name);
 	}
-
+	
 	@Override
 	public byte getId()
 	{
 		return 10;
 	}
-
+	
 	public boolean isEmpty()
 	{
 		return this.payload.isEmpty();
 	}
-
+	
 	public boolean hasTag(String name)
 	{
 		return this.payload.containsKey(name);
 	}
-
+	
 	public void writeAsRoot(DataOutput dataoutput) throws IOException
 	{
 		for (NBTTag tag : this.payload.values())
@@ -43,7 +43,7 @@ public class NBTCompound extends NBTTag
 			tag.write(dataoutput);
 		}
 	}
-
+	
 	public static NBTCompound readAsRoot(DataInput datainput) throws IOException
 	{
 		NBTCompound compound = new NBTCompound();
@@ -65,7 +65,7 @@ public class NBTCompound extends NBTTag
 			}
 		}
 	}
-
+	
 	@Override
 	void writePayload(DataOutput dataoutput) throws IOException
 	{
@@ -75,7 +75,7 @@ public class NBTCompound extends NBTTag
 		}
 		dataoutput.write((byte) 0);
 	}
-
+	
 	@Override
 	void readPayload(DataInput datainput, int depth) throws IOException
 	{
@@ -85,30 +85,30 @@ public class NBTCompound extends NBTTag
 			this.payload.put(tag.getName(), tag);
 		}
 	}
-
+	
 	public void setTag(String name, NBTTag tag)
 	{
 		tag.setName(name);
 		this.payload.put(name, tag);
 	}
-
+	
 	public void setTag(NBTTag tag)
 	{
 		this.payload.put(tag.getName(), tag);
 	}
-
+	
 	public NBTTag getTag(String name)
 	{
 		return this.payload.get(name);
 	}
-
+	
 	public void setString(String name, String tag)
 	{
 		NBTString string = new NBTString(name);
 		string.setString(tag);
 		this.setTag(string);
 	}
-
+	
 	public String getString(String name)
 	{
 		NBTTag tag = this.getTag(name);
@@ -118,14 +118,14 @@ public class NBTCompound extends NBTTag
 		}
 		return "";
 	}
-
+	
 	public void setByte(String name, byte tag)
 	{
 		NBTByte b = new NBTByte(name);
 		b.setByte(tag);
 		this.setTag(b);
 	}
-
+	
 	public byte getByte(String name)
 	{
 		NBTTag tag = this.getTag(name);
@@ -135,14 +135,14 @@ public class NBTCompound extends NBTTag
 		}
 		return 0;
 	}
-
+	
 	public void setBool(String name, boolean tag)
 	{
 		NBTByte b = new NBTByte(name);
 		b.setByte((byte) (tag ? 1 : 0));
 		this.setTag(b);
 	}
-
+	
 	public boolean getBool(String name)
 	{
 		NBTTag tag = this.getTag(name);
@@ -152,14 +152,14 @@ public class NBTCompound extends NBTTag
 		}
 		return false;
 	}
-
+	
 	public void setShort(String name, short tag)
 	{
 		NBTShort nbt = new NBTShort(name);
 		nbt.setShort(tag);
 		this.setTag(nbt);
 	}
-
+	
 	public short getShort(String name)
 	{
 		NBTTag tag = this.getTag(name);
@@ -169,14 +169,14 @@ public class NBTCompound extends NBTTag
 		}
 		return 0;
 	}
-
+	
 	public void setInt(String name, int tag)
 	{
 		NBTInt nbt = new NBTInt(name);
 		nbt.setInt(tag);
 		this.setTag(nbt);
 	}
-
+	
 	public int getInt(String name)
 	{
 		NBTTag tag = this.getTag(name);
@@ -186,14 +186,14 @@ public class NBTCompound extends NBTTag
 		}
 		return 0;
 	}
-
+	
 	public void setLong(String name, long tag)
 	{
 		NBTLong nbt = new NBTLong(name);
 		nbt.setLong(tag);
 		this.setTag(nbt);
 	}
-
+	
 	public long getLong(String name)
 	{
 		NBTTag tag = this.getTag(name);
@@ -203,14 +203,14 @@ public class NBTCompound extends NBTTag
 		}
 		return 0;
 	}
-
+	
 	public void setFloat(String name, float tag)
 	{
 		NBTFloat nbt = new NBTFloat(name);
 		nbt.setFloat(tag);
 		this.setTag(nbt);
 	}
-
+	
 	public float getFloat(String name)
 	{
 		NBTTag tag = this.getTag(name);
@@ -220,14 +220,14 @@ public class NBTCompound extends NBTTag
 		}
 		return Float.NaN;
 	}
-
+	
 	public void setDouble(String name, double tag)
 	{
 		NBTDouble nbt = new NBTDouble(name);
 		nbt.setDouble(tag);
 		this.setTag(nbt);
 	}
-
+	
 	public double getDouble(String name)
 	{
 		NBTTag tag = this.getTag(name);
@@ -237,14 +237,14 @@ public class NBTCompound extends NBTTag
 		}
 		return Double.NaN;
 	}
-
+	
 	public void setByteArray(String name, byte[] tag)
 	{
 		NBTByteArray nbt = new NBTByteArray(name);
 		nbt.setBytes(tag);
 		this.setTag(nbt);
 	}
-
+	
 	public byte[] getByteArray(String name)
 	{
 		NBTTag tag = this.getTag(name);
@@ -254,14 +254,14 @@ public class NBTCompound extends NBTTag
 		}
 		return new byte[0];
 	}
-
+	
 	public void setIntArray(String name, int[] tag)
 	{
 		NBTIntArray nbt = new NBTIntArray(name);
 		nbt.setInts(tag);
 		this.setTag(nbt);
 	}
-
+	
 	public int[] getIntArray(String name)
 	{
 		NBTTag tag = this.getTag(name);
@@ -271,13 +271,13 @@ public class NBTCompound extends NBTTag
 		}
 		return new int[0];
 	}
-
+	
 	public void setCompound(String name, NBTCompound tag)
 	{
 		tag.setName(name);
 		this.setTag(tag);
 	}
-
+	
 	public NBTCompound getCompound(String name)
 	{
 		NBTTag tag = this.getTag(name);
@@ -287,13 +287,13 @@ public class NBTCompound extends NBTTag
 		}
 		return null;
 	}
-
+	
 	public void setList(String name, NBTList tag)
 	{
 		tag.setName(name);
 		this.setTag(tag);
 	}
-
+	
 	public NBTList getList(String name)
 	{
 		NBTTag tag = this.getTag(name);

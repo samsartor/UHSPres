@@ -20,13 +20,14 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 
 public class Presentation
 {
 	private static Presentation instance;
 	
-	private static int width = 1300;
-	private static int height = 700;
+	private static int width = 900;
+	private static int height = 500;
 	
 	public final File theGameDir;
 	public final AssetLoader theAssetLoader;
@@ -89,6 +90,8 @@ public class Presentation
 		}
 		
 		System.out.printf("OpenGL version is (%s)%n", GL11.glGetString(GL11.GL_VERSION));
+		System.out.printf("OpenGL renderer is (%s)%n", GL11.glGetString(GL11.GL_RENDERER));
+		System.out.printf("GLSL version is (%s)%n", GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
 		
 		this.engine = new RenderEngine();
 		this.engine.create();

@@ -16,29 +16,29 @@ public class Shader
 	{
 		FRAGMENT("fsh", GL20.GL_FRAGMENT_SHADER),
 		VERTEX("vsh", GL20.GL_VERTEX_SHADER);
-
+		
 		public final String extension;
 		public final int glMode;
-
+		
 		ShaderType(String extension, int glMode)
 		{
 			this.extension = extension;
 			this.glMode = glMode;
 		}
 	}
-
+	
 	public final ShaderType type;
 	public final Asset asset;
 	private boolean created = false;
 	private boolean isMarkedForDelete = false;
 	private int shader = -1;
-
+	
 	public Shader(ShaderType type, Asset asset)
 	{
 		this.type = type;
 		this.asset = asset;
 	}
-
+	
 	public String loadSource() throws IOException
 	{
 		InputStream in = this.asset.getAsset(this.type.extension).getInput();
@@ -48,7 +48,7 @@ public class Shader
 		}
 		return IOUtils.toString(in);
 	}
-
+	
 	public ShaderCreateInfo create()
 	{
 		this.updateDeleteStatus();
@@ -82,7 +82,7 @@ public class Shader
 		}
 		return new ShaderCreateInfo(ShaderCreateInfo.Error.NONE, null, null);
 	}
-
+	
 	public boolean attach(Program program)
 	{
 		this.updateDeleteStatus();
@@ -98,7 +98,7 @@ public class Shader
 		GL20.glAttachShader(pid, this.shader);
 		return true;
 	}
-
+	
 	public void detach(Program program)
 	{
 		this.updateDeleteStatus();
@@ -113,7 +113,7 @@ public class Shader
 		}
 		GL20.glDetachShader(pid, this.shader);
 	}
-
+	
 	public void delete()
 	{
 		if (this.created)
@@ -123,7 +123,7 @@ public class Shader
 			this.updateDeleteStatus();
 		}
 	}
-
+	
 	private void updateDeleteStatus()
 	{
 		if (this.isMarkedForDelete)
@@ -136,7 +136,7 @@ public class Shader
 			}
 		}
 	}
-
+	
 	public int getShader()
 	{
 		this.updateDeleteStatus();
@@ -146,7 +146,7 @@ public class Shader
 		}
 		return -1;
 	}
-
+	
 	@Override
 	public String toString()
 	{

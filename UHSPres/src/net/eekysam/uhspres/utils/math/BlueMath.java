@@ -1,14 +1,16 @@
 package net.eekysam.uhspres.utils.math;
 
 public class BlueMath
-{	
+{
 	static final double sqrtTwo = Math.sqrt(2.0D);
 	static final double sqrtPi = Math.sqrt(Math.PI);
 	static final double sqrtTwoOverPi = sqrtTwo / sqrtPi;
 	static final double sqrtTwoPi = sqrtTwo * sqrtPi;
 	
 	/**
-	 * Calculates the probability density (PDF) of the standard normal distribution at x.
+	 * Calculates the probability density (PDF) of the standard normal
+	 * distribution at x.
+	 * 
 	 * @param x The value to get the probability of
 	 * @return The standard normal distribution function of x
 	 */
@@ -16,9 +18,11 @@ public class BlueMath
 	{
 		return Math.exp(-0.5D * x * x) / sqrtTwoPi;
 	}
-
+	
 	/**
-	 * Calculates the cumulative distribution function (CDF) of the standard normal distribution using a Taylor series.
+	 * Calculates the cumulative distribution function (CDF) of the standard
+	 * normal distribution using a Taylor series.
+	 * 
 	 * @param x The top of the interval
 	 * @param n How many iterations to make the calculation with
 	 * @return The cumulative distribution function of x
@@ -43,6 +47,7 @@ public class BlueMath
 	
 	/**
 	 * Computes the error function of the given value.
+	 * 
 	 * @param x The value
 	 * @param n How many iterations to make the calculation with
 	 * @return The error function of x
@@ -73,6 +78,7 @@ public class BlueMath
 	
 	/**
 	 * Computes the error function of the given value.
+	 * 
 	 * @param x The value
 	 * @return The error function of x
 	 */
@@ -82,7 +88,9 @@ public class BlueMath
 	}
 	
 	/**
-	 * Calculates the cumulative distribution function (CDF) of the standard normal distribution using a Taylor series.
+	 * Calculates the cumulative distribution function (CDF) of the standard
+	 * normal distribution using a Taylor series.
+	 * 
 	 * @param x The top of the interval
 	 * @return The cumulative distribution function of x
 	 */
@@ -92,7 +100,9 @@ public class BlueMath
 	}
 	
 	/**
-	 * Gets the fraction of the standard distribution that is in the given range.
+	 * Gets the fraction of the standard distribution that is in the given
+	 * range.
+	 * 
 	 * @param min The bottom of the range
 	 * @param max The top of the range
 	 * @return The cumulative probability of the range
@@ -103,7 +113,9 @@ public class BlueMath
 	}
 	
 	/**
-	 * Gets the fraction of the standard distribution that is in the given range.
+	 * Gets the fraction of the standard distribution that is in the given
+	 * range.
+	 * 
 	 * @param min The bottom of the range
 	 * @param max The top of the range
 	 * @param n How many iterations to make the calculation with
@@ -116,10 +128,12 @@ public class BlueMath
 	
 	/**
 	 * Gets the fraction of the given range that is less than the given value.
+	 * 
 	 * @param min The bottom of the range
 	 * @param max The top of the range
 	 * @param x The value to compare
-	 * @return The fraction of the cumulative probability of the range lower than x
+	 * @return The fraction of the cumulative probability of the range lower
+	 *         than x
 	 */
 	public static double standardNormalCumulativeInRange(double min, double max, double x)
 	{
@@ -129,11 +143,13 @@ public class BlueMath
 	
 	/**
 	 * Gets the fraction of the given range that is less than the given value.
+	 * 
 	 * @param min The bottom of the range
 	 * @param max The top of the range
 	 * @param x The value to compare
 	 * @param n How many iterations to make the calculation with
-	 * @return The fraction of the cumulative probability of the range lower than x
+	 * @return The fraction of the cumulative probability of the range lower
+	 *         than x
 	 */
 	public static double standardNormalCumulativeInRange(double min, double max, double x, int n)
 	{

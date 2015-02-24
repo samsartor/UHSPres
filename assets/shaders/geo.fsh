@@ -5,8 +5,8 @@ uniform sampler2D samp_texture;
 in vec3 var_normal;
 in vec2 var_uv;
 
-layout(location = 0) out vec4 out_diffuse; 
-layout(location = 1) out vec3 out_normal;
+out vec4 out_diffuse; 
+out vec3 out_normal;
 
 void main()
 {

@@ -16,7 +16,7 @@ public class GLUtils
 		buff.flip();
 		return buff;
 	}
-
+	
 	public static int[] intArray(List<Integer> values)
 	{
 		int[] array = new int[values.size()];
@@ -26,7 +26,7 @@ public class GLUtils
 		}
 		return array;
 	}
-
+	
 	public static FloatBuffer bufferFloats(float... values)
 	{
 		FloatBuffer buff = BufferUtils.createFloatBuffer(values.length);
@@ -34,7 +34,7 @@ public class GLUtils
 		buff.flip();
 		return buff;
 	}
-
+	
 	public static float[] floatArray(List<Float> values)
 	{
 		float[] array = new float[values.size()];
@@ -44,12 +44,12 @@ public class GLUtils
 		}
 		return array;
 	}
-
+	
 	public static void glTexParameter(int target, int pname, int... param)
 	{
 		GL11.glTexParameter(target, pname, bufferInts(param));
 	}
-
+	
 	public static void glTexParameter(int target, int pname, float... param)
 	{
 		GL11.glTexParameter(target, pname, bufferFloats(param));
