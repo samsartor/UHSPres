@@ -4,6 +4,7 @@ import net.eekysam.uhspres.Config;
 import net.eekysam.uhspres.Presentation;
 import net.eekysam.uhspres.utils.geo.Point;
 import net.eekysam.uhspres.utils.geo.Ray;
+import net.eekysam.uhspres.utils.geo.Vector;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -23,7 +24,35 @@ public class CameraView
 		
 	}
 	
-	public Ray update(Matrix4f veiw, Vector3f pivot)
+	public float getPitch()
+	{
+		Vector vec = this.cameraRay.getVector();
+		return (float) Math.atan2(vec.ypart, Math.sqrt(vec.xpart * vec.xpart + vec.zpart * vec.zpart));
+	}
+	
+	public float getYaw()
+	{
+		Vector vec = this.cameraRay.getVector();
+		return (float) Math.atan2(vec.zpart, vec.xpart);
+	}
+	
+	public void update(Matrix4f view, Ray goal)
+	{
+		Vector3f vec = goal.getVector().getGLVec();
+		float yaw = (float) Math.atan2(vec.z, vec.x);
+		float pitch = (float) Math.atan2(vec.y, Math.sqrt(vec.x * vec.x + vec.z * vec.z));
+		Vector3f up = new Vector3f(0.0F, 1.0F, 0.0F);
+		Vector3f piv = new Vector3f(-1.0F, 0.0F, 0.0F);//Vector3f.cross(up, vec, null);
+		piv.normalise();
+		
+		view.setIdentity();
+		view.rotate(pitch, piv);
+		view.rotate(yaw, up);
+		view.translate((Vector3f) goal.start.getGLVec().negate());
+		this.cameraRay = goal;
+	}
+	
+	public void update(Matrix4f view, Vector3f pivot)
 	{
 		float speed = 1.0F;
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
@@ -33,7 +62,7 @@ public class CameraView
 		if (!Mouse.isInsideWindow())
 		{
 			this.lastValid = false;
-			return this.cameraRay;
+			return;
 		}
 		float x = Mouse.getX() / (float) Presentation.width();
 		float y = Mouse.getY() / (float) Presentation.height();
@@ -46,10 +75,10 @@ public class CameraView
 			this.lastXPos = x;
 			this.lastYPos = y;
 			this.lastValid = true;
-			return this.cameraRay;
+			return;
 		}
 		
-		Matrix4f inverse = Matrix4f.invert(veiw, null);
+		Matrix4f inverse = Matrix4f.invert(view, null);
 		Vector3f cam0 = this.from4f(Matrix4f.transform(inverse, new Vector4f(0.0F, 0.0F, 0.0F, 1.0F), null));
 		Vector3f camx = this.from4f(Matrix4f.transform(inverse, new Vector4f(1.0F, 0.0F, 0.0F, 1.0F), null));
 		Vector3f camy = this.from4f(Matrix4f.transform(inverse, new Vector4f(0.0F, 1.0F, 0.0F, 1.0F), null));
@@ -65,24 +94,23 @@ public class CameraView
 		if (Mouse.isButtonDown(1))
 		{
 			Vector3f point = this.from4f(Matrix4f.transform(inverse, new Vector4f(pivot.x, pivot.y, pivot.z, 1.0F), null));
-			veiw.translate(point);
+			view.translate(point);
 			if ((vecz.y > -0.9F || dy > 0) && (vecz.y < 0.2F || dy < 0))
 			{
-				veiw.rotate(-dy * Config.lookSpeed * Config.lookSpeedY, (new Vector3f(-vecz.z, 0.0F, vecz.x)).normalise(null));
+				view.rotate(-dy * Config.lookSpeed * Config.lookSpeedY * speed, (new Vector3f(-vecz.z, 0.0F, vecz.x)).normalise(null));
 			}
-			veiw.rotate(dx * Config.lookSpeed * Config.lookSpeedX, new Vector3f(0.0F, 1.0F, 0.0F));
-			veiw.translate(point.negate(null));
+			view.rotate(dx * Config.lookSpeed * Config.lookSpeedX * speed, new Vector3f(0.0F, 1.0F, 0.0F));
+			view.translate(point.negate(null));
 		}
 		else if (Mouse.isButtonDown(0))
 		{
-			veiw.translate((Vector3f) (new Vector3f(vecx)).scale(dx * Config.panSpeedX * Config.panSpeed * speed));
-			veiw.translate((Vector3f) (new Vector3f(vecy)).scale(dy * Config.panSpeedY * Config.panSpeed * speed));
+			view.translate((Vector3f) (new Vector3f(vecx)).scale(dx * Config.panSpeedX * Config.panSpeed * speed));
+			view.translate((Vector3f) (new Vector3f(vecy)).scale(dy * Config.panSpeedY * Config.panSpeed * speed));
 		}
-		veiw.translate((Vector3f) (new Vector3f(vecz)).scale(-dz * Config.panSpeedZ * Config.zoomSpeed));
+		view.translate((Vector3f) (new Vector3f(vecz)).scale(-dz * Config.panSpeedZ * Config.zoomSpeed * speed));
 		this.lastXPos = x;
 		this.lastYPos = y;
 		this.cameraRay = Ray.getRay(Point.getPoint(cam0.x, cam0.y, cam0.z), Point.getPoint(camz.x, camz.y, camz.z));
-		return this.cameraRay;
 	}
 	
 	private Vector3f from4f(Vector4f vec)

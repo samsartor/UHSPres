@@ -10,7 +10,7 @@ public class Vector
 	public float xpart;
 	public float ypart;
 	public float zpart;
-
+	
 	/**
 	 * Creates a new vector.
 	 */
@@ -18,7 +18,7 @@ public class Vector
 	{
 		return new Vector(xpart, ypart, zpart);
 	}
-
+	
 	/**
 	 * Gets the vector from origin to the given point.
 	 */
@@ -26,7 +26,7 @@ public class Vector
 	{
 		return new Vector((float) point.xCoord, (float) point.yCoord, (float) point.zCoord);
 	}
-
+	
 	/**
 	 * Gets the vector from the first point to the second point.
 	 */
@@ -34,7 +34,7 @@ public class Vector
 	{
 		return new Vector((float) (p2.xCoord - p1.xCoord), (float) (p2.yCoord - p1.yCoord), (float) (p2.zCoord - p1.zCoord));
 	}
-
+	
 	/**
 	 * Gets the vector of the given ray.
 	 */
@@ -42,19 +42,19 @@ public class Vector
 	{
 		return getVector(ray.start, ray.end);
 	}
-
+	
 	public static Vector getVector(Vector3f vector)
 	{
 		return new Vector(vector.x, vector.y, vector.z);
 	}
-
+	
 	private Vector(float x, float y, float z)
 	{
 		this.xpart = x;
 		this.ypart = y;
 		this.zpart = z;
 	}
-
+	
 	/**
 	 * Gets the length of this vector squared.
 	 */
@@ -62,7 +62,7 @@ public class Vector
 	{
 		return this.xpart * this.xpart + this.ypart * this.ypart + this.zpart * this.zpart;
 	}
-
+	
 	/**
 	 * Gets the length of this vector.
 	 */
@@ -70,7 +70,7 @@ public class Vector
 	{
 		return (float) Math.sqrt(this.lengthSqr());
 	}
-
+	
 	/**
 	 * Normalize this vector.
 	 */
@@ -78,7 +78,7 @@ public class Vector
 	{
 		this.changeLength(1.0F);
 	}
-
+	
 	/**
 	 * Changes the length of this vector.
 	 * 
@@ -88,7 +88,7 @@ public class Vector
 	{
 		this.scale(length / this.length());
 	}
-
+	
 	/**
 	 * Scales this vector.
 	 * 
@@ -100,7 +100,7 @@ public class Vector
 		this.ypart *= scale;
 		this.zpart *= scale;
 	}
-
+	
 	/**
 	 * Cross Product of A and B
 	 * <p>
@@ -118,10 +118,10 @@ public class Vector
 		float x = a.ypart * b.zpart - a.zpart * b.ypart;
 		float y = a.zpart * b.xpart - a.xpart * b.zpart;
 		float z = a.xpart * b.ypart - a.ypart * b.xpart;
-
+		
 		return new Vector(x, y, z);
 	}
-
+	
 	/**
 	 * Dot Product of A and B
 	 * <p>
@@ -137,7 +137,7 @@ public class Vector
 	{
 		return a.xpart * b.xpart + a.ypart * b.ypart + a.zpart * b.zpart;
 	}
-
+	
 	/**
 	 * Cos of the angle between A and B
 	 * 
@@ -152,7 +152,7 @@ public class Vector
 		float den = (float) Math.sqrt(a.magnitudeSqr() * b.magnitudeSqr());
 		return num / den;
 	}
-
+	
 	/**
 	 * The angle between two vectors
 	 * 
@@ -165,7 +165,7 @@ public class Vector
 	{
 		return (float) Math.acos(cosTheta(a, b));
 	}
-
+	
 	/**
 	 * The length of vector A when projected onto this vector
 	 * <p>
@@ -183,7 +183,7 @@ public class Vector
 	{
 		return dot(a, this) / this.magnitude();
 	}
-
+	
 	/**
 	 * The length if you want to sound pretentious
 	 * 
@@ -194,7 +194,7 @@ public class Vector
 	{
 		return (float) Math.sqrt(this.magnitudeSqr());
 	}
-
+	
 	/**
 	 * The length squared if you want to sound pretentious and not use square
 	 * roots
@@ -206,10 +206,15 @@ public class Vector
 	{
 		return this.xpart * this.xpart + this.ypart * this.ypart + this.zpart * this.zpart;
 	}
-
+	
 	public Vector returnNormalized()
 	{
 		this.normalize();
 		return this;
+	}
+	
+	public Vector3f getGLVec()
+	{
+		return new Vector3f(this.xpart, this.ypart, this.zpart);
 	}
 }

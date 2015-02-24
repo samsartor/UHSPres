@@ -26,8 +26,9 @@ public class PointLight extends Light
 		this.position = position;
 		this.color = color;
 		this.spec = this.color;
-		this.spec.scale(spec);
-		this.spec.z = this.color.z;
+		this.spec.x *= spec;
+		this.spec.y *= spec;
+		this.spec.z *= spec;
 		this.power = power;
 		this.shin = shin;
 	}

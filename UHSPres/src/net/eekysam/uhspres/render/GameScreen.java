@@ -50,7 +50,7 @@ public class GameScreen
 	{
 		ShaderUniform un = new ShaderUniform();
 		
-		GL11.glClearColor(0.5F, 0.5F, 0.8F, 1.0F);
+		GL11.glClearColor(33 / 255.0F, 43 / 255.0F, 63 / 255.0F, 1.0F);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		for (IScreenLayer layer : this.layers.values())
 		{

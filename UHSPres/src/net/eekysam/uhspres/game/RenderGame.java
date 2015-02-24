@@ -15,7 +15,10 @@ import net.eekysam.uhspres.render.fbo.ValueFBO;
 import net.eekysam.uhspres.render.lights.PointLight;
 import net.eekysam.uhspres.render.shader.Program;
 import net.eekysam.uhspres.render.shader.ShaderUniform;
+import net.eekysam.uhspres.utils.geo.Point;
+import net.eekysam.uhspres.utils.geo.Ray;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL14;
@@ -50,7 +53,7 @@ public class RenderGame implements IScreenLayer
 	public final Transform cameraTransform;
 	public final Transform lightTransform;
 	
-	public CameraView veiw;
+	public CameraView view;
 	
 	public GeometryFBO geometry;
 	public ValueFBO valSwap;
@@ -74,7 +77,7 @@ public class RenderGame implements IScreenLayer
 		
 		this.cameraTransform = new Transform();
 		this.lightTransform = new Transform();
-		this.veiw = new CameraView();
+		this.view = new CameraView();
 		
 		this.geometry = new GeometryFBO(Presentation.width(), Presentation.height());
 		this.geometry.create();
@@ -87,6 +90,9 @@ public class RenderGame implements IScreenLayer
 		
 		this.world = new PresentationWorld();
 		this.world.create();
+		
+		Ray start = Ray.getRay(Point.getPoint(1.0F, 5.0F, 1.0F), Point.getPoint(0.0F, 4.0F, 0.0F)).setLength(1.0F);
+		this.view.update(this.cameraTransform.get(MatrixMode.VIEW), start);
 	}
 	
 	@Override
@@ -103,6 +109,8 @@ public class RenderGame implements IScreenLayer
 		{
 			this.tickGame();
 		}
+		
+		this.tickInputs();
 		
 		this.renderGame();
 		
@@ -121,8 +129,9 @@ public class RenderGame implements IScreenLayer
 		
 		this.geometry.drawQuad();
 		
+		GL14.glBlendColor(0.1F, 0.1F, 0.1F, 1.0F);
 		GL14.glBlendEquation(GL14.GL_FUNC_ADD);
-		GL14.glBlendFuncSeparate(GL11.GL_DST_COLOR, GL11.GL_ZERO, GL11.GL_ZERO, GL11.GL_ONE);
+		GL14.glBlendFuncSeparate(GL11.GL_CONSTANT_COLOR, GL11.GL_SRC_COLOR, GL11.GL_ZERO, GL11.GL_ONE);
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.light.getDiffuse());
@@ -145,12 +154,44 @@ public class RenderGame implements IScreenLayer
 		
 	}
 	
+	public void tickInputs()
+	{
+		float radToDeg = 180.0F / (float) Math.PI;
+		while (Keyboard.next())
+		{
+			if (Keyboard.getEventKeyState() == true)
+			{
+				int k = Keyboard.getEventKey();
+				if (!Presentation.play)
+				{
+					if (k == Keyboard.KEY_SPACE || k == Keyboard.KEY_RETURN)
+					{
+						float x = (float) this.view.cameraRay.start.xCoord;
+						float y = (float) this.view.cameraRay.start.yCoord;
+						float z = (float) this.view.cameraRay.start.zCoord;
+						float yaw = this.view.getYaw();
+						float pitch = this.view.getPitch();
+						
+						System.out.printf("Camera {pos = [%.2f, %.2f, %.2f], yaw = %.2f, pitch = %.2f}%n", x, y, z, yaw * radToDeg, pitch * radToDeg);
+					}
+				}
+			}
+		}
+	}
+	
 	public void renderGame()
 	{
 		GL11.glDisable(GL11.GL_BLEND);
 		ShaderUniform un = new ShaderUniform();
 		
-		this.veiw.update(this.cameraTransform.get(MatrixMode.VIEW), new Vector3f(0.0F, 0.0F, 1.0F));
+		if (Presentation.play)
+		{
+			
+		}
+		else
+		{
+			this.view.update(this.cameraTransform.get(MatrixMode.VIEW), new Vector3f(0.0F, 0.0F, 1.0F));
+		}
 		
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthMask(true);

@@ -10,7 +10,7 @@ public class Point
 	public double xCoord;
 	public double yCoord;
 	public double zCoord;
-
+	
 	/**
 	 * Creates a new point.
 	 */
@@ -18,19 +18,19 @@ public class Point
 	{
 		return new Point(x, y, z);
 	}
-
+	
 	public static Point getPoint(Vector3f vector)
 	{
 		return new Point(vector.x, vector.y, vector.z);
 	}
-
+	
 	private Point(double x, double y, double z)
 	{
 		this.xCoord = x;
 		this.yCoord = y;
 		this.zCoord = z;
 	}
-
+	
 	/**
 	 * Sets the location of this point.
 	 */
@@ -41,7 +41,7 @@ public class Point
 		this.zCoord = z;
 		return this;
 	}
-
+	
 	/**
 	 * Translates this point by the given amount.
 	 */
@@ -51,7 +51,7 @@ public class Point
 		this.yCoord += dy;
 		this.zCoord += dz;
 	}
-
+	
 	/**
 	 * Gets the distance squared from the point to the origin.
 	 */
@@ -60,10 +60,10 @@ public class Point
 		double xs = this.xCoord * this.xCoord;
 		double ys = this.yCoord * this.yCoord;
 		double zs = this.zCoord * this.zCoord;
-
+		
 		return xs + ys + zs;
 	}
-
+	
 	/**
 	 * Gets the distance from the point to the origin.
 	 */
@@ -71,7 +71,7 @@ public class Point
 	{
 		return Math.sqrt(this.squareDistanceOrigin());
 	}
-
+	
 	/**
 	 * Gets the distance from this point to the given point.
 	 */
@@ -79,7 +79,7 @@ public class Point
 	{
 		return distance(this, p);
 	}
-
+	
 	/**
 	 * Gets the distance between two points.
 	 */
@@ -87,7 +87,7 @@ public class Point
 	{
 		return Math.sqrt(squareDistance(p1, p2));
 	}
-
+	
 	/**
 	 * Gets the distance squared from this point to the given point.
 	 */
@@ -96,14 +96,14 @@ public class Point
 		double x = this.xCoord - px;
 		double y = this.yCoord - py;
 		double z = this.zCoord - pz;
-
+		
 		double xs = x * x;
 		double ys = y * y;
 		double zs = z * z;
-
+		
 		return xs + ys + zs;
 	}
-
+	
 	/**
 	 * Gets the distance squared from this point to the given point.
 	 */
@@ -111,7 +111,7 @@ public class Point
 	{
 		return squareDistance(this, p);
 	}
-
+	
 	/**
 	 * Gets the distance squared between two points.
 	 */
@@ -120,14 +120,14 @@ public class Point
 		double x = p1.xCoord - p2.xCoord;
 		double y = p1.yCoord - p2.yCoord;
 		double z = p1.zCoord - p2.zCoord;
-
+		
 		double xs = x * x;
 		double ys = y * y;
 		double zs = z * z;
-
+		
 		return xs + ys + zs;
 	}
-
+	
 	/**
 	 * Gets a point along the line between the given points.
 	 * 
@@ -143,7 +143,7 @@ public class Point
 		double x = p2.xCoord - p1.xCoord;
 		double y = p2.yCoord - p1.yCoord;
 		double z = p2.zCoord - p1.zCoord;
-
+		
 		if (x * x < 1E-7D)
 		{
 			return null;
@@ -154,7 +154,7 @@ public class Point
 			return weight >= 0.0D && weight <= 1.0D ? new Point(p1.xCoord + x * weight, p1.yCoord + y * weight, p1.zCoord + z * weight) : null;
 		}
 	}
-
+	
 	/**
 	 * Translates this point by the coordinates of the given point.
 	 */
@@ -164,7 +164,7 @@ public class Point
 		this.yCoord += p.yCoord;
 		this.zCoord += p.zCoord;
 	}
-
+	
 	/**
 	 * Creates a new point by translating the given point by the given vector.
 	 * 
@@ -176,7 +176,7 @@ public class Point
 	{
 		return new Point(point.xCoord + vector.xpart, point.yCoord + vector.ypart, point.zCoord + vector.zpart);
 	}
-
+	
 	/**
 	 * Gets a point along the line between the given points.
 	 * 
@@ -192,7 +192,7 @@ public class Point
 		double x = p2.xCoord - p1.xCoord;
 		double y = p2.yCoord - p1.yCoord;
 		double z = p2.zCoord - p1.zCoord;
-
+		
 		if (y * y < 1E-7D)
 		{
 			return null;
@@ -203,7 +203,7 @@ public class Point
 			return weight >= 0.0D && weight <= 1.0D ? new Point(p1.xCoord + x * weight, p1.yCoord + y * weight, p1.zCoord + z * weight) : null;
 		}
 	}
-
+	
 	/**
 	 * Gets a point along or extended beyond the line created by the given
 	 * points.
@@ -219,7 +219,7 @@ public class Point
 		double x = p2.xCoord - p1.xCoord;
 		double y = p2.yCoord - p1.yCoord;
 		double z = p2.zCoord - p1.zCoord;
-
+		
 		if (y * y < 1E-7D)
 		{
 			return null;
@@ -230,7 +230,7 @@ public class Point
 			return new Point(p1.xCoord + x * weight, p1.yCoord + y * weight, p1.zCoord + z * weight);
 		}
 	}
-
+	
 	/**
 	 * Gets a point along the line between the given points.
 	 * 
@@ -246,7 +246,7 @@ public class Point
 		double x = p2.xCoord - p1.xCoord;
 		double y = p2.yCoord - p1.yCoord;
 		double z = p2.zCoord - p1.zCoord;
-
+		
 		if (z * z < 1E-7D)
 		{
 			return null;
@@ -257,7 +257,7 @@ public class Point
 			return weight >= 0.0D && weight <= 1.0D ? new Point(p1.xCoord + x * weight, p1.yCoord + y * weight, p1.zCoord + z * weight) : null;
 		}
 	}
-
+	
 	/**
 	 * Gets a point along the line between the given points.
 	 * 
@@ -275,10 +275,10 @@ public class Point
 		double x = p2.xCoord - p1.xCoord;
 		double y = p2.yCoord - p1.yCoord;
 		double z = p2.zCoord - p1.zCoord;
-
+		
 		return new Point(p1.xCoord + x * slide, p1.yCoord + y * slide, p1.zCoord + z * slide);
 	}
-
+	
 	/**
 	 * Gets a point along the line between the given points.
 	 * 
@@ -293,9 +293,9 @@ public class Point
 		double x = p2.xCoord - p1.xCoord;
 		double y = p2.yCoord - p1.yCoord;
 		double z = p2.zCoord - p1.zCoord;
-
+		
 		double l = distance(p1, p2);
-
+		
 		if (l < 1E-7D)
 		{
 			return null;
@@ -306,7 +306,7 @@ public class Point
 			return new Point(p1.xCoord + x * weight, p1.yCoord + y * weight, p1.zCoord + z * weight);
 		}
 	}
-
+	
 	/**
 	 * Gets a point along the line between the given points.
 	 * 
@@ -321,9 +321,9 @@ public class Point
 		double x = p2.xCoord - p1.xCoord;
 		double y = p2.yCoord - p1.yCoord;
 		double z = p2.zCoord - p1.zCoord;
-
+		
 		double l = distance(p1, p2);
-
+		
 		if (l < 1E-7D)
 		{
 			return null;
@@ -334,7 +334,7 @@ public class Point
 			return new Point(p1.xCoord + x * weight, p1.yCoord + y * weight, p1.zCoord + z * weight);
 		}
 	}
-
+	
 	/**
 	 * Duplicates this point.
 	 * 
@@ -344,10 +344,15 @@ public class Point
 	{
 		return new Point(this.xCoord, this.yCoord, this.zCoord);
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return String.format("(%.2f, %.2f, %.2f)", this.xCoord, this.yCoord, this.zCoord);
+	}
+	
+	public Vector3f getGLVec()
+	{
+		return new Vector3f((float) this.xCoord, (float) this.yCoord, (float) this.zCoord);
 	}
 }

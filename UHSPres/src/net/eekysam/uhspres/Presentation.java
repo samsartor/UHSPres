@@ -25,13 +25,15 @@ public class Presentation
 {
 	private static Presentation instance;
 	
-	private static int width = 1500;
-	private static int height = 900;
+	private static int width = 1300;
+	private static int height = 700;
 	
 	public final File theGameDir;
 	public final AssetLoader theAssetLoader;
 	
 	public RenderEngine engine;
+	
+	public static final boolean play = false;
 	
 	public Presentation(String dir)
 	{
