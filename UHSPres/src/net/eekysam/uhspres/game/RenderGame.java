@@ -162,7 +162,7 @@ public class RenderGame implements IScreenLayer
 		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ZERO, GL11.GL_ONE);
 		
 		this.theEngine.vignette.bind();
-		un.setFloat(1.5F);
+		un.setFloat(1.4F);
 		un.upload(this.theEngine.vignette, "un_outside");
 		un.setFloat(0.6F);
 		un.upload(this.theEngine.vignette, "un_inside");

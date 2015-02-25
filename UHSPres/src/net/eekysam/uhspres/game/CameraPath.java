@@ -24,7 +24,7 @@ public class CameraPath
 			String text = read.nextLine().trim();
 			text = text.replaceAll("[ ]{2,}", " ");
 			String[] line = text.split(" ");
-			if (line.length == 7)
+			if (!text.startsWith("//") && line.length == 7)
 			{
 				EnumPointType type = line[0].equals("@") ? EnumPointType.STOP : EnumPointType.KEY;
 				float x = Float.parseFloat(line[1]);

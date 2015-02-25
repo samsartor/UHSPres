@@ -72,8 +72,7 @@ public class PathPoint
 		float x = a.x * mixa + b.x * mixb;
 		float y = a.y * mixa + b.y * mixb;
 		float z = a.z * mixa + b.z * mixb;
-		float dyaw = ((b.yaw - a.yaw) % pi2 + pi4) % pi2 - pi;
-		float yaw = a.yaw * mixa + b.yaw * mixb;// * dyaw;
+		float yaw = a.yaw * mixa + b.yaw * mixb;
 		float pitch = a.pitch * mixa + b.pitch * mixb;
 		return new PathPoint(EnumPointType.INTERPOLATED, x, y, z, yaw, pitch, time);
 	}
