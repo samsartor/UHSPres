@@ -21,6 +21,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -119,7 +120,7 @@ public class RenderGame implements IScreenLayer
 		pdif += this.partial - this.lastPartial;
 		float dtime = pdif / this.timer.ticksPerSecond;
 		
-		if (Presentation.play)
+		if (Presentation.play())
 		{
 			this.world.path.update(dtime * Config.presSpeed);
 		}
@@ -156,6 +157,21 @@ public class RenderGame implements IScreenLayer
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		
+		GL20.glBlendEquationSeparate(GL14.GL_FUNC_ADD, GL14.GL_FUNC_ADD);
+		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ZERO, GL11.GL_ONE);
+		
+		this.theEngine.vignette.bind();
+		un.setFloat(1.5F);
+		un.upload(this.theEngine.vignette, "un_outside");
+		un.setFloat(0.6F);
+		un.upload(this.theEngine.vignette, "un_inside");
+		un.setFloats(0.0F, 0.0F, 0.0F, 1.0F);
+		un.upload(this.theEngine.vignette, "un_color");
+		
+		target.drawQuad();
+		
+		this.theEngine.vignette.unbind();
 		GL11.glDisable(GL11.GL_BLEND);
 		
 		this.timer.update();
@@ -174,7 +190,7 @@ public class RenderGame implements IScreenLayer
 			if (Keyboard.getEventKeyState() == true)
 			{
 				int k = Keyboard.getEventKey();
-				if (Presentation.play)
+				if (Presentation.play())
 				{
 					if (k == Keyboard.KEY_SPACE || k == Keyboard.KEY_RIGHT)
 					{
@@ -213,7 +229,7 @@ public class RenderGame implements IScreenLayer
 		GL11.glDisable(GL11.GL_BLEND);
 		ShaderUniform un = new ShaderUniform();
 		
-		if (Presentation.play)
+		if (Presentation.play())
 		{
 			PathPoint point = this.world.path.getCurrentPoint();
 			this.view.update(this.cameraTransform.get(MatrixMode.VIEW), new Vector3f(point.x, point.y, point.z), point.yaw, point.pitch);

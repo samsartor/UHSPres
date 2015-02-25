@@ -35,11 +35,11 @@ public class Presentation
 	
 	public RenderEngine engine;
 	
-	public static final boolean play = true;
+	public final boolean play;
 	
 	private boolean close = false;
 	
-	public Presentation(String dir, boolean full, int width, int height, int ssaoQuality)
+	public Presentation(String dir, boolean full, int width, int height, boolean play)
 	{
 		this.theGameDir = new File(dir);
 		
@@ -50,8 +50,8 @@ public class Presentation
 		this.width = width;
 		this.height = height;
 		this.full = full;
+		this.play = play;
 		
-		Config.ssaoQuality = ssaoQuality;
 	}
 	
 	public static Presentation instance()
@@ -67,6 +67,11 @@ public class Presentation
 	public static int height()
 	{
 		return instance.height;
+	}
+	
+	public static boolean play()
+	{
+		return instance.play;
 	}
 	
 	public static float aspect()

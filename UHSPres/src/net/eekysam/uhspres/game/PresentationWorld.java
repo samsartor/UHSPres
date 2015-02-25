@@ -55,7 +55,7 @@ public class PresentationWorld
 		this.worldUVBuf = new VertexBuffer(false);
 		this.worldIndBuf = new VertexBuffer(true);
 		
-		if (Presentation.play)
+		if (Presentation.play())
 		{
 			this.path = new CameraPath(new GameAsset("path.txt"));
 		}

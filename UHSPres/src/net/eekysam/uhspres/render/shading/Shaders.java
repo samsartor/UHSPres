@@ -21,6 +21,8 @@ public class Shaders
 	public final Shader ssaoF;
 	public final Asset lightA;
 	public final Shader lightF;
+	public final Asset vignetteA;
+	public final Shader vignetteF;
 	
 	public Shaders()
 	{
@@ -30,6 +32,7 @@ public class Shaders
 		this.vblurA = new Asset("shaders/vblur");
 		this.ssaoA = new Asset("shaders/ssao");
 		this.lightA = new Asset("shaders/light");
+		this.vignetteA = new Asset("shaders/vignette");
 		
 		this.blitV = new Shader(ShaderType.VERTEX, this.blitA);
 		this.blitF = new Shader(ShaderType.FRAGMENT, this.blitA);
@@ -39,6 +42,7 @@ public class Shaders
 		this.vblurF = new Shader(ShaderType.FRAGMENT, this.vblurA);
 		this.ssaoF = new Shader(ShaderType.FRAGMENT, this.ssaoA);
 		this.lightF = new Shader(ShaderType.FRAGMENT, this.lightA);
+		this.vignetteF = new Shader(ShaderType.FRAGMENT, this.vignetteA);
 	}
 	
 	public void create()
@@ -51,6 +55,7 @@ public class Shaders
 		this.createShader(this.geoV);
 		this.createShader(this.ssaoF);
 		this.createShader(this.lightF);
+		this.createShader(this.vignetteF);
 	}
 	
 	public boolean createShader(Shader shader)

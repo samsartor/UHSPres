@@ -11,5 +11,5 @@ public class Config
 	public static final float panSpeedY = 1.0F;
 	public static final float panSpeedZ = 1.0F;
 	public static int ssaoQuality = 64;
-	public static final float presSpeed = 5.0F;
+	public static float presSpeed = 1.0F;
 }

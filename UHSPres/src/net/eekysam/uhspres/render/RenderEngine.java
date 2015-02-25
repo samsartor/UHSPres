@@ -39,6 +39,7 @@ public class RenderEngine
 	public Program lumblit;
 	public Program vblur;
 	public Program light;
+	public Program vignette;
 	
 	public final Shaders shaders;
 	
@@ -53,6 +54,7 @@ public class RenderEngine
 		this.lumblit = new Program(EnumDrawBufferLocs.DIFFUSE);
 		this.vblur = new Program(EnumDrawBufferLocs.VALUE);
 		this.light = new Program(EnumDrawBufferLocs.DIFFUSE);
+		this.vignette = new Program(EnumDrawBufferLocs.DIFFUSE);
 		
 		this.geometryPass = new ShadeGeometry(this);
 		this.ssaoPass = new ShadeSSAO(this, this.vblur, 4, Config.ssaoQuality, new Random());
@@ -81,6 +83,11 @@ public class RenderEngine
 		this.shaders.blitV.attach(this.light);
 		this.shaders.lightF.attach(this.light);
 		this.linkProgram(this.light, this.shaders.lightA.file);
+		
+		this.vignette.create();
+		this.shaders.blitV.attach(this.vignette);
+		this.shaders.vignetteF.attach(this.vignette);
+		this.linkProgram(this.vignette, this.shaders.vignetteA.file);
 		
 		this.geometryPass.create();
 		this.ssaoPass.create();
