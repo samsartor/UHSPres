@@ -10,54 +10,34 @@ public class Shaders
 	public final Asset blitA;
 	public final Shader blitV;
 	public final Shader blitF;
-	public final Asset mulblitA;
-	public final Shader mulblitF;
 	public final Asset lumblitA;
 	public final Shader lumblitF;
 	public final Asset geoA;
 	public final Shader geoV;
 	public final Shader geoF;
-	public final Asset blurA;
-	public final Shader blurF;
 	public final Asset vblurA;
 	public final Shader vblurF;
 	public final Asset ssaoA;
 	public final Shader ssaoF;
-	public final Asset posA;
-	public final Shader posV;
-	public final Asset depthA;
-	public final Shader depthF;
-	public final Asset shadowA;
-	public final Shader shadowF;
 	public final Asset lightA;
 	public final Shader lightF;
 	
 	public Shaders()
 	{
 		this.blitA = new Asset("shaders/blit");
-		this.mulblitA = new Asset("shaders/mulblit");
 		this.lumblitA = new Asset("shaders/lumblit");
 		this.geoA = new Asset("shaders/geo");
-		this.blurA = new Asset("shaders/blur");
 		this.vblurA = new Asset("shaders/vblur");
 		this.ssaoA = new Asset("shaders/ssao");
-		this.posA = new Asset("shaders/pos");
-		this.depthA = new Asset("shaders/depth");
-		this.shadowA = new Asset("shaders/shadow");
 		this.lightA = new Asset("shaders/light");
 		
 		this.blitV = new Shader(ShaderType.VERTEX, this.blitA);
 		this.blitF = new Shader(ShaderType.FRAGMENT, this.blitA);
-		this.mulblitF = new Shader(ShaderType.FRAGMENT, this.mulblitA);
 		this.lumblitF = new Shader(ShaderType.FRAGMENT, this.lumblitA);
 		this.geoV = new Shader(ShaderType.VERTEX, this.geoA);
 		this.geoF = new Shader(ShaderType.FRAGMENT, this.geoA);
-		this.blurF = new Shader(ShaderType.FRAGMENT, this.blurA);
 		this.vblurF = new Shader(ShaderType.FRAGMENT, this.vblurA);
 		this.ssaoF = new Shader(ShaderType.FRAGMENT, this.ssaoA);
-		this.posV = new Shader(ShaderType.VERTEX, this.posA);
-		this.depthF = new Shader(ShaderType.FRAGMENT, this.depthA);
-		this.shadowF = new Shader(ShaderType.FRAGMENT, this.shadowA);
 		this.lightF = new Shader(ShaderType.FRAGMENT, this.lightA);
 	}
 	
@@ -65,15 +45,10 @@ public class Shaders
 	{
 		this.createShader(this.blitF);
 		this.createShader(this.blitV);
-		this.createShader(this.mulblitF);
 		this.createShader(this.lumblitF);
-		this.createShader(this.blurF);
 		this.createShader(this.vblurF);
-		this.createShader(this.depthF);
 		this.createShader(this.geoF);
 		this.createShader(this.geoV);
-		this.createShader(this.posV);
-		this.createShader(this.shadowF);
 		this.createShader(this.ssaoF);
 		this.createShader(this.lightF);
 	}

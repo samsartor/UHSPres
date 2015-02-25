@@ -46,7 +46,7 @@ void main()
 			// project sample position:
 			vec4 offset = vec4(sample, 1.0);
 			offset = un_pmat * offset;
-			offset.xy /= offset.w;
+			offset /= offset.w;
 
 			vec4 pick =  un_inv_pmat * vec4(offset.xy, texture(samp_depth, offset.xy * 0.5 + 0.5).r, 1.0);
 			pick /= pick.w;

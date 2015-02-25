@@ -26,23 +26,32 @@ public class Presentation
 {
 	private static Presentation instance;
 	
-	private static int width = 900;
-	private static int height = 500;
+	private int width;
+	private int height;
+	private boolean full;
 	
 	public final File theGameDir;
 	public final AssetLoader theAssetLoader;
 	
 	public RenderEngine engine;
 	
-	public static final boolean play = false;
+	public static final boolean play = true;
 	
-	public Presentation(String dir)
+	private boolean close = false;
+	
+	public Presentation(String dir, boolean full, int width, int height, int ssaoQuality)
 	{
 		this.theGameDir = new File(dir);
 		
 		this.theAssetLoader = new AssetLoader(new File(this.theGameDir, "assets/"));
 		
 		instance = this;
+		
+		this.width = width;
+		this.height = height;
+		this.full = full;
+		
+		Config.ssaoQuality = ssaoQuality;
 	}
 	
 	public static Presentation instance()
@@ -52,12 +61,12 @@ public class Presentation
 	
 	public static int width()
 	{
-		return width;
+		return instance.width;
 	}
 	
 	public static int height()
 	{
-		return height;
+		return instance.height;
 	}
 	
 	public static float aspect()
@@ -80,8 +89,20 @@ public class Presentation
 		
 		try
 		{
-			Display.setDisplayMode(new DisplayMode(Presentation.width(), Presentation.height()));
+			DisplayMode mode;
+			if (this.full)
+			{
+				mode = Display.getDesktopDisplayMode();
+			}
+			else
+			{
+				mode = new DisplayMode(Presentation.width(), Presentation.height());
+			}
+			Display.setDisplayMode(mode);
+			Display.setFullscreen(Presentation.instance().full);
 			Display.create();
+			this.width = Display.getWidth();
+			this.height = Display.getHeight();
 			Mouse.create();
 		}
 		catch (LWJGLException e)
@@ -105,12 +126,29 @@ public class Presentation
 			Display.sync(60);
 		}
 		
+		if (screen.theGame.world.outPath != null)
+		{
+			try
+			{
+				screen.theGame.world.outPath.close();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
 		Display.destroy();
 	}
 	
 	public boolean closeRequested()
 	{
-		return Display.isCloseRequested();
+		return Display.isCloseRequested() || this.close;
+	}
+	
+	public void close()
+	{
+		this.close = true;
 	}
 	
 	public void onCrash(Exception e)

@@ -2,6 +2,7 @@ package net.eekysam.uhspres.game;
 
 import java.io.IOException;
 
+import net.eekysam.uhspres.Config;
 import net.eekysam.uhspres.Presentation;
 import net.eekysam.uhspres.asset.GameAsset;
 import net.eekysam.uhspres.font.Font;
@@ -15,8 +16,6 @@ import net.eekysam.uhspres.render.fbo.ValueFBO;
 import net.eekysam.uhspres.render.lights.PointLight;
 import net.eekysam.uhspres.render.shader.Program;
 import net.eekysam.uhspres.render.shader.ShaderUniform;
-import net.eekysam.uhspres.utils.geo.Point;
-import net.eekysam.uhspres.utils.geo.Ray;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -46,6 +45,7 @@ public class RenderGame implements IScreenLayer
 	
 	public Timer timer = null;
 	public float partial;
+	public float lastPartial;
 	public Font font;
 	
 	public final RenderEngine theEngine;
@@ -91,8 +91,8 @@ public class RenderGame implements IScreenLayer
 		this.world = new PresentationWorld();
 		this.world.create();
 		
-		Ray start = Ray.getRay(Point.getPoint(1.0F, 5.0F, 1.0F), Point.getPoint(0.0F, 4.0F, 0.0F)).setLength(1.0F);
-		this.view.update(this.cameraTransform.get(MatrixMode.VIEW), start);
+		//Ray start = Ray.getRay(Point.getPoint(1.0F, 5.0F, 1.0F), Point.getPoint(0.0F, 4.0F, 0.0F)).setLength(1.0F);
+		//this.view.update(this.cameraTransform.get(MatrixMode.VIEW), start);
 	}
 	
 	@Override
@@ -104,13 +104,25 @@ public class RenderGame implements IScreenLayer
 			this.timer.resetTimer();
 			this.timer.partialTicks += 1;
 		}
+		this.lastPartial = this.partial;
+		this.partial = this.timer.partialTicks;
 		
+		float pdif = 0.0F;
 		for (int i = 0; i < this.timer.elapsedTicks; i++)
 		{
 			this.tickGame();
+			pdif += 1;
 		}
 		
 		this.tickInputs();
+		
+		pdif += this.partial - this.lastPartial;
+		float dtime = pdif / this.timer.ticksPerSecond;
+		
+		if (Presentation.play)
+		{
+			this.world.path.update(dtime * Config.presSpeed);
+		}
 		
 		this.renderGame();
 		
@@ -162,7 +174,18 @@ public class RenderGame implements IScreenLayer
 			if (Keyboard.getEventKeyState() == true)
 			{
 				int k = Keyboard.getEventKey();
-				if (!Presentation.play)
+				if (Presentation.play)
+				{
+					if (k == Keyboard.KEY_SPACE || k == Keyboard.KEY_RIGHT)
+					{
+						this.world.path.next();
+					}
+					if (k == Keyboard.KEY_LEFT)
+					{
+						this.world.path.prev();
+					}
+				}
+				else
 				{
 					if (k == Keyboard.KEY_SPACE || k == Keyboard.KEY_RETURN)
 					{
@@ -173,7 +196,13 @@ public class RenderGame implements IScreenLayer
 						float pitch = this.view.getPitch();
 						
 						System.out.printf("Camera {pos = [%.2f, %.2f, %.2f], yaw = %.2f, pitch = %.2f}%n", x, y, z, yaw * radToDeg, pitch * radToDeg);
+						
+						this.world.outPath.addPoint(k == Keyboard.KEY_RETURN, x, y, z, yaw, pitch, 5.0F);
 					}
+				}
+				if (k == Keyboard.KEY_ESCAPE && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+				{
+					Presentation.instance().close();
 				}
 			}
 		}
@@ -186,7 +215,8 @@ public class RenderGame implements IScreenLayer
 		
 		if (Presentation.play)
 		{
-			
+			PathPoint point = this.world.path.getCurrentPoint();
+			this.view.update(this.cameraTransform.get(MatrixMode.VIEW), new Vector3f(point.x, point.y, point.z), point.yaw, point.pitch);
 		}
 		else
 		{

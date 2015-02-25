@@ -36,20 +36,27 @@ public class CameraView
 		return (float) Math.atan2(vec.zpart, vec.xpart);
 	}
 	
+	public void update(Matrix4f view, Vector3f pos, float yaw, float pitch)
+	{
+		Vector3f up = new Vector3f(0.0F, 1.0F, 0.0F);
+		Vector3f piv = new Vector3f(-1.0F, 0.0F, 0.0F);//Vector3f.cross(up, vec, null);
+		view.setIdentity();
+		view.rotate(pitch, piv);
+		view.rotate(yaw + (float) Math.PI / 2, up);
+		view.translate(pos.negate(null));
+	}
+	
+	public void update(Matrix4f view, float x, float y, float z, float yaw, float pitch)
+	{
+		this.update(view, new Vector3f(x, y, z), yaw, pitch);
+	}
+	
 	public void update(Matrix4f view, Ray goal)
 	{
 		Vector3f vec = goal.getVector().getGLVec();
 		float yaw = (float) Math.atan2(vec.z, vec.x);
 		float pitch = (float) Math.atan2(vec.y, Math.sqrt(vec.x * vec.x + vec.z * vec.z));
-		Vector3f up = new Vector3f(0.0F, 1.0F, 0.0F);
-		Vector3f piv = new Vector3f(-1.0F, 0.0F, 0.0F);//Vector3f.cross(up, vec, null);
-		piv.normalise();
-		
-		view.setIdentity();
-		view.rotate(pitch, piv);
-		view.rotate(yaw, up);
-		view.translate((Vector3f) goal.start.getGLVec().negate());
-		this.cameraRay = goal;
+		this.update(view, goal.start.getGLVec(), yaw, pitch);
 	}
 	
 	public void update(Matrix4f view, Vector3f pivot)

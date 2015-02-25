@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
+import net.eekysam.uhspres.Presentation;
 import net.eekysam.uhspres.asset.AssetLoader;
 import net.eekysam.uhspres.asset.GameAsset;
 import net.eekysam.uhspres.asset.obj.OBJLoader;
@@ -36,9 +37,12 @@ public class PresentationWorld
 	
 	public int worldTexture;
 	
-	public Vector4f ambient = new Vector4f(0.5F, 0.5F, 0.5F, 1.0F);
+	public Vector4f ambient = new Vector4f(0.4F, 0.4F, 0.4F, 1.0F);
 	
 	public ArrayList<PointLight> lights = new ArrayList<PointLight>();
+	
+	public CameraPathOutput outPath = null;
+	public CameraPath path = null;
 	
 	public PresentationWorld()
 	{
@@ -50,11 +54,20 @@ public class PresentationWorld
 		this.worldNormBuf = new VertexBuffer(false);
 		this.worldUVBuf = new VertexBuffer(false);
 		this.worldIndBuf = new VertexBuffer(true);
+		
+		if (Presentation.play)
+		{
+			this.path = new CameraPath(new GameAsset("path.txt"));
+		}
+		else
+		{
+			this.outPath = new CameraPathOutput(AssetLoader.instance().getOutput(new GameAsset("last-path.txt"), true), 0.0F);
+		}
 	}
 	
 	public void create()
 	{
-		float scale = 0.75F;
+		float scale = 1.0F;
 		OBJLoader loader = new OBJLoader();
 		loader.read(new GameAsset("world/model.obj"));
 		loader.load();

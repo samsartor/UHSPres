@@ -7,7 +7,7 @@ public class Main
 		String dir = System.getProperty("user.dir");
 		dir = dir.replaceAll("\\\\", "\\/");
 		dir += "/";
-		Presentation turrem = new Presentation(dir);
+		Presentation turrem = new Presentation(dir, true, 900, 700, 48);
 		Thread.currentThread().setName("UHS Presentation");
 		turrem.run();
 	}
