@@ -33,10 +33,10 @@ void main()
 	float dotl = dot(normal, lightDir / dist);
 	
 	vec3 view = normalize(pos.xyz);
-	
+
 	if (dotl > 0.0)
 	{
 		float dotr = max(dot(reflect(lightDir / dist, normal), view), 0);
-		out_diffuse = un_light_color * un_light_power * dotl + un_light_spec * un_light_power * pow(dotr , un_shin);
+		out_diffuse = (un_light_color * un_light_power * dotl + un_light_spec * un_light_power * pow(dotr , un_shin)) / (dist * dist / 64);
 	}
 }

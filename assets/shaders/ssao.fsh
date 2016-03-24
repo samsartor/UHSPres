@@ -57,5 +57,5 @@ void main()
 		}
 	}
 	
-	out_value = 1.0 - (occlusion / div);
+	out_value = 0.5 * (1.0 - (occlusion / div));
 }

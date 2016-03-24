@@ -145,6 +145,7 @@ public class RenderGame implements IScreenLayer
 		
 		GL14.glBlendColor(0.1F, 0.1F, 0.1F, 1.0F);
 		GL14.glBlendEquation(GL14.GL_FUNC_ADD);
+		//GL14.glBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ZERO, GL11.GL_ZERO, GL11.GL_ONE);
 		GL14.glBlendFuncSeparate(GL11.GL_DST_COLOR, GL11.GL_ZERO, GL11.GL_ZERO, GL11.GL_ONE);
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
@@ -241,12 +242,12 @@ public class RenderGame implements IScreenLayer
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		
 		this.occlusion.bind();
-		GL11.glClearColor(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glDisable(GL11.GL_BLEND);
 		
 		this.theEngine.ssaoPass.renderOcclusion(Presentation.width(), Presentation.height(), this.geometry, this.valSwap, this.occlusion, 10.0F, project);
 		
 		this.light.bind();
+		GL11.glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		this.theEngine.lumblit.bind();
 		

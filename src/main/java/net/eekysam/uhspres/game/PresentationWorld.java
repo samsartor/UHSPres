@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Random;
 
 import net.eekysam.uhspres.Presentation;
 import net.eekysam.uhspres.asset.AssetLoader;
@@ -46,9 +47,13 @@ public class PresentationWorld
 	
 	public PresentationWorld()
 	{
-		this.lights.add(new PointLight(new Vector3f(20.0F, 20.0F, 20.0F), new Vector4f(0.2F, 0.2F, 0.2F, 1.0F), 0.5F, 1.4F, 1.0F));
-		this.lights.add(new PointLight(new Vector3f(0.0F, -50.0F, 0.0F), new Vector4f(0.08F, 0.08F, 0.3F, 1.0F), 0.5F, 0.7F, 1.0F));
-		this.lights.add(new PointLight(new Vector3f(-30.0F, 30.0F, 10.0F), new Vector4f(0.5F, 0.42F, 0.35F, 1.0F), 0.5F, 1.1F, 1.0F));
+		Random rand = new Random();
+		for (int i = 0; i < 40; i++) {
+			this.lights.add(new PointLight(new Vector3f(rand.nextFloat() * 120 - 60, rand.nextFloat() * 120 - 60, rand.nextFloat() * 40 - 20), new Vector4f(rand.nextFloat(), rand.nextFloat(), rand.nextFloat(), 1.0F), 0.5F, 1.4F, 1.0F));
+		}
+		//this.lights.add(new PointLight(new Vector3f(20.0F, 20.0F, 10.0F), new Vector4f(0.2F, 0.2F, 0.2F, 1.0F), 0.5F, 1.4F, 1.0F));
+		//this.lights.add(new PointLight(new Vector3f(0.0F, -50.0F, 0.0F), new Vector4f(0.08F, 0.08F, 0.3F, 1.0F), 0.5F, 0.7F, 1.0F));
+		//this.lights.add(new PointLight(new Vector3f(-10.0F, 10.0F, 10.0F), new Vector4f(0.5F, 0.42F, 0.35F, 1.0F), 0.5F, 1.1F, 1.0F));
 		this.worldVAO = new VertexArray();
 		this.worldPosBuf = new VertexBuffer(false);
 		this.worldNormBuf = new VertexBuffer(false);
@@ -146,6 +151,11 @@ public class PresentationWorld
 	
 	public void renderGameGeo(Matrix4f model, Runnable onMatrixChange, Program program)
 	{
+		Random r = new Random();
+		for (PointLight l : lights) {
+			l.position = l.position.translate(r.nextFloat() * 0.2F - 0.1F, r.nextFloat() * 0.2F - 0.1F, r.nextFloat() * 0.2F - 0.1F);
+		}
+
 		ShaderUniform un = new ShaderUniform();
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
