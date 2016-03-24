@@ -61,7 +61,7 @@ public class ShadeSSAO extends ShadePass
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, geo.getNormal());
 		un.setInt(0);
-		un.upload(this.ssao, "samp_norm");
+		//un.upload(this.ssao, "samp_norm");
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, geo.getDepth());
 		un.setInt(1);
@@ -93,12 +93,12 @@ public class ShadeSSAO extends ShadePass
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		GL13.glActiveTexture(GL13.GL_TEXTURE2);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-		
+
 		this.blur.bind();
 		
 		un.setInt(0);
 		un.upload(this.blur, "samp_value");
-		un.setFloat(this.noiseSize);
+		un.setFloat(this.noiseSize / 2);
 		un.upload(this.blur, "un_radius");
 		un.setFloats(1.0F / width, 1.0F / height);
 		un.upload(this.blur, "un_texel");

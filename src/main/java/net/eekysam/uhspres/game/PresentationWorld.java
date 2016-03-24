@@ -46,9 +46,9 @@ public class PresentationWorld
 	
 	public PresentationWorld()
 	{
-		this.lights.add(new PointLight(new Vector3f(20.0F, 20.0F, 20.0F), new Vector4f(0.2F, 0.2F, 0.2F, 1.0F), 0.9F, 1.4F, 5.0F));
-		this.lights.add(new PointLight(new Vector3f(0.0F, -50.0F, 0.0F), new Vector4f(0.08F, 0.08F, 0.3F, 1.0F), 0.9F, 0.7F, 5.0F));
-		this.lights.add(new PointLight(new Vector3f(-30.0F, 30.0F, 10.0F), new Vector4f(0.5F, 0.42F, 0.35F, 1.0F), 0.9F, 1.1F, 5.0F));
+		this.lights.add(new PointLight(new Vector3f(20.0F, 20.0F, 20.0F), new Vector4f(0.2F, 0.2F, 0.2F, 1.0F), 0.5F, 1.4F, 1.0F));
+		this.lights.add(new PointLight(new Vector3f(0.0F, -50.0F, 0.0F), new Vector4f(0.08F, 0.08F, 0.3F, 1.0F), 0.5F, 0.7F, 1.0F));
+		this.lights.add(new PointLight(new Vector3f(-30.0F, 30.0F, 10.0F), new Vector4f(0.5F, 0.42F, 0.35F, 1.0F), 0.5F, 1.1F, 1.0F));
 		this.worldVAO = new VertexArray();
 		this.worldPosBuf = new VertexBuffer(false);
 		this.worldNormBuf = new VertexBuffer(false);
@@ -125,6 +125,15 @@ public class PresentationWorld
 		{
 			e.printStackTrace();
 		}
+
+		/*
+		for (int i = 0; i < img.getWidth(); i++) {
+			for (int j = 0; j < img.getHeight(); j++) {
+				img.setRGB(i, j, 0xFFFFFF);
+			}
+		}
+		*/
+
 		ByteBuffer buff = ImgUtils.imageToBufferDefault(img);
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);

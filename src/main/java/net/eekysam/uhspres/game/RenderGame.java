@@ -128,6 +128,7 @@ public class RenderGame implements IScreenLayer
 		this.renderGame();
 		
 		target.bind();
+
 		ShaderUniform un = new ShaderUniform();
 		this.theEngine.blit.bind();
 		
@@ -144,7 +145,7 @@ public class RenderGame implements IScreenLayer
 		
 		GL14.glBlendColor(0.1F, 0.1F, 0.1F, 1.0F);
 		GL14.glBlendEquation(GL14.GL_FUNC_ADD);
-		GL14.glBlendFuncSeparate(GL11.GL_CONSTANT_COLOR, GL11.GL_SRC_COLOR, GL11.GL_ZERO, GL11.GL_ONE);
+		GL14.glBlendFuncSeparate(GL11.GL_DST_COLOR, GL11.GL_ZERO, GL11.GL_ZERO, GL11.GL_ONE);
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.light.getDiffuse());
@@ -152,27 +153,6 @@ public class RenderGame implements IScreenLayer
 		this.light.drawQuad();
 		
 		this.theEngine.blit.unbind();
-		
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-		GL13.glActiveTexture(GL13.GL_TEXTURE1);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-		
-		GL20.glBlendEquationSeparate(GL14.GL_FUNC_ADD, GL14.GL_FUNC_ADD);
-		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ZERO, GL11.GL_ONE);
-		
-		this.theEngine.vignette.bind();
-		un.setFloat(1.4F);
-		un.upload(this.theEngine.vignette, "un_outside");
-		un.setFloat(0.6F);
-		un.upload(this.theEngine.vignette, "un_inside");
-		un.setFloats(0.0F, 0.0F, 0.0F, 1.0F);
-		un.upload(this.theEngine.vignette, "un_color");
-		
-		target.drawQuad();
-		
-		this.theEngine.vignette.unbind();
-		GL11.glDisable(GL11.GL_BLEND);
 		
 		this.timer.update();
 	}
@@ -264,7 +244,7 @@ public class RenderGame implements IScreenLayer
 		GL11.glClearColor(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glDisable(GL11.GL_BLEND);
 		
-		this.theEngine.ssaoPass.renderOcclusion(Presentation.width(), Presentation.height(), this.geometry, this.valSwap, this.occlusion, 5.0F, project);
+		this.theEngine.ssaoPass.renderOcclusion(Presentation.width(), Presentation.height(), this.geometry, this.valSwap, this.occlusion, 10.0F, project);
 		
 		this.light.bind();
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);

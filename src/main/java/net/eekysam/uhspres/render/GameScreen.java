@@ -49,7 +49,7 @@ public class GameScreen
 	public void render()
 	{
 		ShaderUniform un = new ShaderUniform();
-		
+
 		GL11.glClearColor(33 / 255.0F, 43 / 255.0F, 63 / 255.0F, 1.0F);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		for (IScreenLayer layer : this.layers.values())
@@ -75,5 +75,28 @@ public class GameScreen
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 			}
 		}
+
+		GL11.glEnable(GL11.GL_BLEND);
+
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		GL13.glActiveTexture(GL13.GL_TEXTURE1);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+
+		GL20.glBlendEquationSeparate(GL14.GL_FUNC_ADD, GL14.GL_FUNC_ADD);
+		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ZERO, GL11.GL_ONE);
+
+		this.engine.vignette.bind();
+		un.setFloat(1.4F);
+		un.upload(this.engine.vignette, "un_outside");
+		un.setFloat(0.6F);
+		un.upload(this.engine.vignette, "un_inside");
+		un.setFloats(0.0F, 0.0F, 0.0F, 0.5F);
+		un.upload(this.engine.vignette, "un_color");
+
+		target.drawQuad();
+
+		this.engine.vignette.unbind();
+		GL11.glDisable(GL11.GL_BLEND);
 	}
 }
