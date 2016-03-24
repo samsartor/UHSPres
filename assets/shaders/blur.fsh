@@ -11,11 +11,11 @@ out vec4 out_diffuse;
 
 void main() 
 {
-    vec4 sum = vec4(0.0);
+    vec4 sum = 0.0;
     float strength = 0.0;
     for (float r = -un_radius; r <= un_radius; r += 1.0) 
 	{
-        vec4 sample = texture(samp_diffuse, var_texCoord + un_texel * r * un_dir);
+        vec4 sample = texture(samp_diffuse, var_texCoord + un_texel * r * un_dir).r;
         float s = 1.0 - abs(r / un_radius) * un_radImpact;
         strength += s;
         sum += sample * s;

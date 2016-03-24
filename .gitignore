@@ -1,7 +1,10 @@
-.project
-.metadata
-.recommenders
-bin/
-.classpath
-.settings/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+
 /libs/
+/build/
+/.idea/
+/.gradle/
